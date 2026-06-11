@@ -2,11 +2,19 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="description" content="Axon Stack — Infraestrutura, Cloud e Software. Desenvolvemos e entregamos soluções tecnológicas completas para o crescimento do seu negócio."/>
+<meta property="og:title" content="Axon Stack — Infraestrutura, Cloud e Software"/>
+<meta property="og:description" content="Do servidor ao software, entregamos a stack completa que o seu negócio precisa para operar com performance e segurança."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://axonstack.dev"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Axon Stack — Infraestrutura, Cloud e Software"/>
+<meta name="theme-color" content="#000000"/>
 <title>Axon Stack — Infraestrutura, Cloud e Software</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
- <link rel="icon" type="image/x-icon" href="img/logo-icone.png">
+<link rel="icon" type="image/x-icon" href="img/logo-icone.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Megrim&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -21,13 +29,23 @@
   --border-o:rgba(232,80,2,0.28);
 }
 
-html{scroll-behavior:smooth}
+html{
+  scroll-behavior:smooth;
+  /* FIX: evita scroll horizontal em iOS/Android */
+  overflow-x:hidden;
+  width:100%;
+}
 
 body{
   background:#000;color:#fff;
   font-family:'Inter',sans-serif;
+  /* FIX: previne scroll horizontal */
   overflow-x:hidden;
+  width:100%;
   -webkit-font-smoothing:antialiased;
+  /* FIX: evita zoom automático em inputs/taps no iOS */
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
 }
 
 /* Global neural canvas */
@@ -35,6 +53,8 @@ body{
   position:fixed;top:0;left:0;
   width:100%;height:100%;
   z-index:0;pointer-events:none;
+  /* FIX: garante que canvas não cause overflow */
+  max-width:100vw;
 }
 
 /* Every section sits above canvas */
@@ -51,6 +71,9 @@ nav{
   padding:16px 40px;
   display:flex;align-items:center;justify-content:space-between;
   transition:all 0.4s ease;
+  /* FIX: garante que nav não vaze horizontalmente */
+  width:100%;
+  max-width:100vw;
 }
 nav.scrolled{
   background:rgba(0,0,0,0.75);
@@ -102,6 +125,9 @@ nav.scrolled{
   background:rgba(0,0,0,0.97);
   z-index:190;
   flex-direction:column;align-items:center;justify-content:center;gap:36px;
+  /* FIX: evita overflow dentro do drawer */
+  overflow:hidden;
+  width:100%;
 }
 .nav-drawer.open{display:flex}
 .nav-drawer a{
@@ -138,7 +164,10 @@ nav.scrolled{
 #hero{
   min-height:100vh;
   display:flex;align-items:center;
-  overflow:hidden;position:relative;
+  /* FIX: impede overflow horizontal */
+  overflow:hidden;
+  position:relative;
+  width:100%;
 }
 .hero-waves{
   position:absolute;inset:0;z-index:0;pointer-events:none;
@@ -221,7 +250,10 @@ nav.scrolled{
   padding:36px 0;
   border-top:1px solid var(--border);
   border-bottom:1px solid var(--border);
+  /* FIX: position:relative necessário para os pseudo-elementos absolute funcionarem */
+  position:relative;
   overflow:hidden;
+  width:100%;
 }
 .clients-strip::before,.clients-strip::after{
   content:'';position:absolute;top:0;bottom:0;width:100px;z-index:2;
@@ -243,7 +275,12 @@ nav.scrolled{
 .client-logo:hover{color:rgba(232,80,2,0.6)}
 
 /* ── SECTIONS SHARED ── */
-section{padding:110px 40px}
+section{
+  padding:110px 40px;
+  /* FIX: garante que seções não causem overflow */
+  overflow:hidden;
+  width:100%;
+}
 .container{max-width:1200px;margin:0 auto}
 .section-label{
   font-size:11px;font-weight:500;letter-spacing:3px;
@@ -381,6 +418,9 @@ footer{
   padding:52px 40px 32px;
   background:rgba(0,0,0,0.6);
   backdrop-filter:blur(10px);
+  /* FIX: evita overflow */
+  overflow:hidden;
+  width:100%;
 }
 .footer-inner{
   max-width:1200px;margin:0 auto;
@@ -430,20 +470,75 @@ footer{
   to{transform:translateX(-50%)}
 }
 
-/* ── MOBILE FIRST ── */
+/* ── MOBILE ── */
 @media(max-width:768px){
   nav{padding:14px 20px}
   nav.scrolled{padding:10px 20px}
   .nav-links{display:none}
   .nav-hamburger{display:flex}
-  .cursor,.cursor-ring{display:none}
+  /* FIX: esconder cursor no mobile */
+  .cursor,.cursor-ring{display:none !important}
 
-  section{padding:72px 20px}
+  section{padding:72px 20px;overflow:hidden}
   #cta-final{padding:80px 20px}
   footer{padding:40px 20px 24px}
 
-  .hero-content{padding:110px 20px 72px}
-  .hero-headline{font-size:clamp(38px,10vw,60px);letter-spacing:1px}
+  /* FIX: hero centralizado no mobile */
+  .hero-content{
+    padding:100px 24px 80px;
+    text-align:center;
+    width:100%;
+    max-width:100%;
+  }
+  .hero-eyebrow{
+    text-align:center;
+  }
+  .hero-headline{
+    font-size:clamp(38px,10vw,60px);
+    letter-spacing:1px;
+    text-align:center;
+    max-width:100%;
+    /* garante que não vai vazar */
+    word-break:break-word;
+    hyphens:auto;
+  }
+  .hero-sub{
+    text-align:center;
+    max-width:100%;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .hero-actions{
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    width:100%;
+  }
+  .btn-primary,.btn-ghost{
+    width:100%;
+    max-width:320px;
+    justify-content:center;
+  }
+
+  /* FIX: navbar centralizada no mobile */
+  nav{
+    justify-content:space-between;
+    padding:12px 20px;
+  }
+  /* Centralizar logo e nome na navbar mobile */
+  .nav-logo{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+  }
+  .nav-logo-icon{width:38px;height:38px}
+  .nav-logo-text{font-size:16px}
+  /* Hamburger fica à direita */
+  .nav-hamburger{
+    margin-left:auto;
+    position:relative;
+    z-index:1;
+  }
 
   .services-grid{grid-template-columns:1fr;gap:14px}
   .service-card{padding:24px 20px}
@@ -458,12 +553,17 @@ footer{
   .footer-bottom{flex-direction:column;text-align:center}
 
   .cta-buttons{flex-direction:column;align-items:center}
-  .btn-primary,.btn-ghost{width:100%;max-width:320px;justify-content:center}
 }
+
 @media(max-width:480px){
   .process-steps{grid-template-columns:1fr;gap:28px}
   .process-steps::before{display:none}
   .hero-headline{font-size:clamp(34px,11vw,52px)}
+
+  /* FIX: padding mínimo nas laterais para nada vazar */
+  .hero-content{padding:100px 16px 80px}
+  section{padding:60px 16px}
+  nav{padding:12px 16px}
 }
 </style>
 </head>
@@ -472,12 +572,12 @@ footer{
 <!-- GLOBAL FLOATING DOTS CANVAS -->
 <canvas id="net-canvas"></canvas>
 
-<!-- CURSOR (desktop) -->
+<!-- CURSOR (desktop) — FIX: apenas renderizado em desktop via JS -->
 <div class="cursor" id="cursor-dot"><div class="cursor-dot"></div></div>
 <div class="cursor-ring" id="cursor-ring"></div>
 
 <!-- MOBILE NAV DRAWER -->
-<div class="nav-drawer" id="nav-drawer">
+<div class="nav-drawer" id="nav-drawer" role="dialog" aria-label="Menu de navegação">
   <a href="#servicos" onclick="closeMenu()">Serviços</a>
   <a href="#processo" onclick="closeMenu()">Processo</a>
   <a href="#diferenciais" onclick="closeMenu()">Diferenciais</a>
@@ -487,7 +587,7 @@ footer{
 <!-- NAVBAR -->
 <nav id="navbar">
   <a href="#" class="nav-logo">
-    <img src="img/logo-icone.png" class="nav-logo-icon" alt="Axon Stack"/>
+    <img src="img/logo-icone.png" class="nav-logo-icon" width="82" height="82" alt="Axon Stack logo"/>
     <span class="nav-logo-text">AXON STACK</span>
   </a>
   <ul class="nav-links">
@@ -496,7 +596,8 @@ footer{
     <li><a href="#diferenciais">Diferenciais</a></li>
     <li><a href="#cta-final" class="nav-cta">Contato</a></li>
   </ul>
-  <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+  <!-- FIX: aria-expanded atualizado via JS -->
+  <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-drawer">
     <span></span><span></span><span></span>
   </button>
 </nav>
@@ -510,8 +611,8 @@ footer{
     <h1 class="hero-headline">Da<br/>Infraestrutura<br/>à <span>Criação</span> de<br/>Sistemas</h1>
     <p class="hero-sub">Desenvolvemos e entregamos soluções tecnológicas completas para o crescimento do seu negócio.</p>
     <div class="hero-actions">
-      <a href="https://instagram.com/axonstack.dev" target="_blank" class="btn-primary">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      <a href="https://instagram.com/axonstack.dev" target="_blank" rel="noopener noreferrer" class="btn-primary">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         Falar no Instagram
       </a>
       <a href="#servicos" class="btn-ghost">Ver serviços</a>
@@ -556,7 +657,7 @@ footer{
     <div class="services-grid">
 
       <div class="service-card reveal reveal-delay-1">
-        <svg class="service-icon" viewBox="0 0 44 44" fill="none">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" aria-hidden="true">
           <path d="M8 28c0-7.7 6.3-14 14-14s14 6.3 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           <rect x="4" y="28" width="36" height="10" rx="3" stroke="currentColor" stroke-width="1.5"/>
           <circle cx="11" cy="33" r="1.5" fill="currentColor"/>
@@ -568,7 +669,7 @@ footer{
       </div>
 
       <div class="service-card reveal reveal-delay-2">
-        <svg class="service-icon" viewBox="0 0 44 44" fill="none">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" aria-hidden="true">
           <rect x="6" y="6" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
           <rect x="24" y="6" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
           <rect x="6" y="24" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
@@ -580,7 +681,7 @@ footer{
       </div>
 
       <div class="service-card reveal reveal-delay-3">
-        <svg class="service-icon" viewBox="0 0 44 44" fill="none">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" aria-hidden="true">
           <rect x="4" y="10" width="36" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/>
           <path d="M15 34l-3 6h20l-3-6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
           <path d="M14 18h16M14 23h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -590,7 +691,7 @@ footer{
       </div>
 
       <div class="service-card reveal reveal-delay-1">
-        <svg class="service-icon" viewBox="0 0 44 44" fill="none">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" aria-hidden="true">
           <path d="M6 10l16 12 16-12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           <rect x="4" y="8" width="36" height="28" rx="3" stroke="currentColor" stroke-width="1.5"/>
         </svg>
@@ -599,7 +700,7 @@ footer{
       </div>
 
       <div class="service-card reveal reveal-delay-2">
-        <svg class="service-icon" viewBox="0 0 44 44" fill="none">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" aria-hidden="true">
           <path d="M6 8h32a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.5"/>
           <path d="M12 18l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -608,7 +709,7 @@ footer{
       </div>
 
       <div class="service-card reveal reveal-delay-3">
-        <svg class="service-icon" viewBox="0 0 44 44" fill="none">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" aria-hidden="true">
           <rect x="4" y="8" width="36" height="28" rx="3" stroke="currentColor" stroke-width="1.5"/>
           <path d="M14 20l-6 2 6 2M30 20l6 2-6 2M26 16l-8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -664,7 +765,7 @@ footer{
 
           <div class="diff-item">
             <div class="diff-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
@@ -676,7 +777,7 @@ footer{
 
           <div class="diff-item">
             <div class="diff-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                 <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M17.5 14v7M14 17.5h7" stroke-linecap="round"/>
               </svg>
@@ -689,7 +790,7 @@ footer{
 
           <div class="diff-item">
             <div class="diff-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                 <path d="M12 2l3 6.5L22 9.5l-5 5 1.18 7.02L12 18.27l-6.18 3.25L7 14.5 2 9.5l7-1L12 2z" stroke-linejoin="round"/>
               </svg>
             </div>
@@ -701,7 +802,7 @@ footer{
 
           <div class="diff-item">
             <div class="diff-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
                 <path d="M3 9h18M9 21V9" stroke-linecap="round"/>
               </svg>
@@ -729,12 +830,12 @@ footer{
     <h2 class="cta-final-title reveal reveal-delay-1">Vamos construir a tecnologia que o seu negócio precisa.</h2>
     <p class="cta-final-sub reveal reveal-delay-2">Entre em contato e descubra como a Axon Stack pode transformar sua operação.</p>
     <div class="cta-buttons reveal reveal-delay-3">
-      <a href="https://instagram.com/axonstack.dev" target="_blank" class="btn-primary">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      <a href="https://instagram.com/axonstack.dev" target="_blank" rel="noopener noreferrer" class="btn-primary" aria-label="Falar com Axon Stack no Instagram">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         @axonstack.dev
       </a>
-      <a href="mailto:axonstack.dev@gmail.com" class="btn-ghost">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <a href="mailto:axonstack.dev@gmail.com" class="btn-ghost" aria-label="Enviar e-mail para Axon Stack">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         axonstack.dev@gmail.com
       </a>
     </div>
@@ -746,16 +847,16 @@ footer{
   <div class="footer-inner">
     <div class="footer-brand">
       <div class="footer-logo">
-        <img src="img/logo-icone.png" width="34" height="34" alt="Axon Stack" style="object-fit:contain"/>
+        <img src="img/logo-icone.png" width="34" height="34" alt="Axon Stack logo" style="object-fit:contain"/>
         <span class="nav-logo-text" style="font-size:17px">AXON STACK</span>
       </div>
       <p class="footer-tagline">Infraestrutura, Cloud e Software</p>
       <div class="footer-socials">
-        <a href="https://instagram.com/axonstack.dev" target="_blank" class="social-btn" aria-label="Instagram">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        <a href="https://instagram.com/axonstack.dev" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="Seguir Axon Stack no Instagram">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         </a>
-        <a href="mailto:axonstack.dev@gmail.com" class="social-btn" aria-label="Email">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <a href="mailto:axonstack.dev@gmail.com" class="social-btn" aria-label="Enviar e-mail para Axon Stack">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </a>
       </div>
     </div>
@@ -769,7 +870,6 @@ footer{
         <a href="#servicos">Desenvolvimento Web</a>
         <a href="#servicos">Sistemas SaaS</a>
       </div>
-
     </div>
     <div>
       <p class="footer-col-title">Empresa</p>
@@ -781,11 +881,9 @@ footer{
       </div>
     </div>
     <div>
-
-        
       <p class="footer-col-title">Contato</p>
       <div class="footer-links">
-        <a href="https://instagram.com/axonstack.dev" target="_blank">@axonstack.dev</a>
+        <a href="https://instagram.com/axonstack.dev" target="_blank" rel="noopener noreferrer">@axonstack.dev</a>
         <a href="mailto:axonstack.dev@gmail.com">axonstack.dev@gmail.com</a>
       </div>
     </div>
@@ -803,17 +901,21 @@ window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 40);
 }, {passive:true});
 
-// ── MOBILE MENU ──
+// ── MOBILE MENU — FIX: aria-expanded atualizado ──
 const hamburger = document.getElementById('hamburger');
 const drawer = document.getElementById('nav-drawer');
 function toggleMenu() {
   const open = drawer.classList.toggle('open');
   hamburger.classList.toggle('open', open);
+  hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  hamburger.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
   document.body.style.overflow = open ? 'hidden' : '';
 }
 function closeMenu() {
   drawer.classList.remove('open');
   hamburger.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', 'false');
+  hamburger.setAttribute('aria-label', 'Abrir menu');
   document.body.style.overflow = '';
 }
 
@@ -832,23 +934,26 @@ const diffObs = new IntersectionObserver(entries => {
 }, {threshold:0.08});
 diffItems.forEach(el => diffObs.observe(el));
 
-// ── HERO PARALLAX ──
+// ── HERO PARALLAX — FIX: reseta opacity ao voltar ao topo ──
 window.addEventListener('scroll', () => {
   const sy = window.scrollY;
   const hc = document.querySelector('.hero-content');
-  if (hc && sy < window.innerHeight) {
+  if (!hc) return;
+  if (sy < window.innerHeight) {
+    const opacity = Math.max(0, 1 - sy / (window.innerHeight * 0.75));
     hc.style.transform = `translateY(${sy * 0.22}px)`;
-    hc.style.opacity = 1 - sy / (window.innerHeight * 0.75);
+    hc.style.opacity = opacity;
+  } else {
+    // FIX: garante que fique 0 quando completamente scrollado
+    hc.style.opacity = 0;
   }
 }, {passive:true});
 
-// ──────────────────────────────────────────────
-// GLOBAL FLOATING DOTS — scroll-aware, always on
-// ──────────────────────────────────────────────
+// ── GLOBAL FLOATING DOTS — FIX: pausa quando fora da viewport ──
 (function() {
   const canvas = document.getElementById('net-canvas');
   const ctx = canvas.getContext('2d');
-  let W, H;
+  let W, H, animId, isVisible = true;
 
   function resize() {
     W = canvas.width = window.innerWidth;
@@ -861,7 +966,6 @@ window.addEventListener('scroll', () => {
   const COUNT = mobile() ? 22 : 42;
   const DIST  = mobile() ? 120 : 155;
 
-  // Build nodes spread across full document height initially
   const nodes = Array.from({length: COUNT}, () => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
@@ -874,17 +978,11 @@ window.addEventListener('scroll', () => {
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
-
-    // Move
     nodes.forEach(n => {
-      n.x += n.vx;
-      n.y += n.vy;
-      n.pulse += 0.025;
+      n.x += n.vx; n.y += n.vy; n.pulse += 0.025;
       if (n.x < 0 || n.x > W) n.vx *= -1;
       if (n.y < 0 || n.y > H) n.vy *= -1;
     });
-
-    // Connections
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const dx = nodes[i].x - nodes[j].x;
@@ -896,20 +994,15 @@ window.addEventListener('scroll', () => {
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
           ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.strokeStyle = useOrange
-            ? `rgba(232,80,2,${a * 1.5})`
-            : `rgba(255,255,255,${a * 0.45})`;
+          ctx.strokeStyle = useOrange ? `rgba(232,80,2,${a * 1.5})` : `rgba(255,255,255,${a * 0.45})`;
           ctx.lineWidth = 0.55;
           ctx.stroke();
         }
       }
     }
-
-    // Dots
     nodes.forEach(n => {
       const p = 0.75 + Math.sin(n.pulse) * 0.25;
       if (n.orange) {
-        // soft glow halo
         const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 7);
         g.addColorStop(0, `rgba(232,80,2,${0.22 * p})`);
         g.addColorStop(1, 'rgba(232,80,2,0)');
@@ -920,24 +1013,31 @@ window.addEventListener('scroll', () => {
       }
       ctx.beginPath();
       ctx.arc(n.x, n.y, n.r * p, 0, Math.PI * 2);
-      ctx.fillStyle = n.orange
-        ? `rgba(232,80,2,${0.88 * p})`
-        : `rgba(255,255,255,${0.62 * p})`;
+      ctx.fillStyle = n.orange ? `rgba(232,80,2,${0.88 * p})` : `rgba(255,255,255,${0.62 * p})`;
       ctx.fill();
     });
-
-    requestAnimationFrame(draw);
+    animId = requestAnimationFrame(draw);
   }
+
+  // FIX: pausa/retoma animação com visibilidade da página
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      cancelAnimationFrame(animId);
+    } else {
+      draw();
+    }
+  });
+
   draw();
 })();
 
-// ── HERO ENERGY WAVES ──
+// ── HERO ENERGY WAVES — FIX: pausa quando fora da viewport ──
 (function() {
   const canvas = document.getElementById('hero-canvas');
   const hero   = document.getElementById('hero');
   if (!canvas || !hero) return;
   const ctx = canvas.getContext('2d');
-  let W, H, t = 0;
+  let W, H, t = 0, animId;
 
   function resize() {
     W = canvas.width  = hero.offsetWidth;
@@ -960,7 +1060,6 @@ window.addEventListener('scroll', () => {
     bg.addColorStop(0,'rgba(102,31,26,0.18)');
     bg.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
-
     lines.forEach((ln, idx) => {
       ctx.beginPath();
       const yBase = ln.y * H;
@@ -986,25 +1085,44 @@ window.addEventListener('scroll', () => {
       ctx.lineWidth = ln.width;
       ctx.stroke();
     });
-    t++; requestAnimationFrame(draw);
+    t++;
+    animId = requestAnimationFrame(draw);
   }
+
+  // FIX: pausa hero waves quando fora da viewport
+  const heroObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        draw();
+      } else {
+        cancelAnimationFrame(animId);
+      }
+    });
+  }, {threshold: 0.01});
+  heroObs.observe(hero);
+
   draw();
 })();
 
-// ── DIFF CANVAS ──
+// ── DIFF CANVAS — FIX: usa ResizeObserver ao invés de setTimeout ──
 (function() {
   const canvas = document.getElementById('diff-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  let W, H, t = 0;
+  let W, H, t = 0, animId;
 
   function resize() {
     const r = canvas.getBoundingClientRect();
-    W = canvas.width  = r.width  || 460;
-    H = canvas.height = r.height || 420;
+    if (r.width > 0 && r.height > 0) {
+      W = canvas.width  = r.width;
+      H = canvas.height = r.height;
+    }
   }
-  setTimeout(resize, 120);
-  window.addEventListener('resize', resize, {passive:true});
+
+  // FIX: ResizeObserver garante que o canvas receba dimensões corretas
+  const ro = new ResizeObserver(() => resize());
+  ro.observe(canvas);
+  resize();
 
   function drawHex(cx,cy,r,angle,alpha,isO) {
     ctx.beginPath();
@@ -1019,11 +1137,10 @@ window.addEventListener('scroll', () => {
   }
 
   function draw() {
-    if (!W||!H){requestAnimationFrame(draw);return}
+    if (!W||!H){animId=requestAnimationFrame(draw);return}
     ctx.clearRect(0,0,W,H);
     const cx=W/2,cy=H/2;
     for (let i=5;i>=1;i--) drawHex(cx,cy,28*i+Math.sin(t*.01+i)*5,t*.005*(i%2?1:-1),.055*(6-i),i%2===0);
-
     ctx.beginPath();
     for (let i=0;i<3;i++){
       const a=(i/3)*Math.PI*2+t*.008;
@@ -1032,7 +1149,6 @@ window.addEventListener('scroll', () => {
       i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
     }
     ctx.closePath();ctx.strokeStyle='rgba(232,80,2,0.65)';ctx.lineWidth=1.4;ctx.stroke();
-
     for (let i=0;i<8;i++){
       const a=(i/8)*Math.PI*2+t*.004;
       const r2=112+Math.sin(t*.01+i*.8)*13;
@@ -1042,22 +1158,40 @@ window.addEventListener('scroll', () => {
       ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);
       ctx.strokeStyle='rgba(255,255,255,0.035)';ctx.lineWidth=0.4;ctx.stroke();
     }
-
     const g=ctx.createRadialGradient(cx,cy,0,cx,cy,18);
     g.addColorStop(0,'rgba(232,80,2,0.55)');g.addColorStop(1,'rgba(232,80,2,0)');
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,18,0,Math.PI*2);ctx.fill();
     ctx.beginPath();ctx.arc(cx,cy,3.5,0,Math.PI*2);ctx.fillStyle='#E85002';ctx.fill();
-
-    t++;requestAnimationFrame(draw);
+    t++;
+    animId = requestAnimationFrame(draw);
   }
+
+  // FIX: pausa diff canvas quando fora da viewport
+  const diffSection = document.getElementById('diferenciais');
+  if (diffSection) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { draw(); }
+        else { cancelAnimationFrame(animId); }
+      });
+    }, {threshold: 0.01});
+    obs.observe(diffSection);
+  }
+
   draw();
 })();
 
-// ── CUSTOM CURSOR (desktop) ──
+// ── CUSTOM CURSOR — FIX: apenas em desktop, sem vazar no mobile ──
 (function(){
-  if (window.innerWidth < 768) return;
   const dot  = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
+  // FIX: verifica se é dispositivo touch
+  const isTouch = () => ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (isTouch() || window.innerWidth < 768) {
+    if (dot)  dot.style.display  = 'none';
+    if (ring) ring.style.display = 'none';
+    return;
+  }
   let mx=0,my=0,rx=0,ry=0;
   window.addEventListener('mousemove', e=>{mx=e.clientX;my=e.clientY;});
   (function loop(){
