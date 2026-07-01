@@ -7,7 +7,7 @@ export default function DiffCanvas() {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
-    let W, H, t = 0, animId
+    let W, H, t = 0, animId, running = false
 
     function resize() {
       const r = canvas.getBoundingClientRect()
@@ -63,22 +63,30 @@ export default function DiffCanvas() {
       animId = requestAnimationFrame(draw)
     }
 
+    function start() {
+      if (running) return
+      running = true
+      draw()
+    }
+    function stop() {
+      running = false
+      cancelAnimationFrame(animId)
+    }
+
     const diffSection = document.getElementById('diferenciais')
     let obs
     if (diffSection) {
       obs = new IntersectionObserver(entries => {
         entries.forEach(e => {
-          if (e.isIntersecting) { draw() }
-          else { cancelAnimationFrame(animId) }
+          if (e.isIntersecting) start()
+          else stop()
         })
       }, { threshold: 0.01 })
       obs.observe(diffSection)
     }
 
-    draw()
-
     return () => {
-      cancelAnimationFrame(animId)
+      stop()
       ro.disconnect()
       if (obs) obs.disconnect()
     }

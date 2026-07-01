@@ -11,19 +11,26 @@ export default function CustomCursor() {
     const dotInner = dotInnerRef.current
 
     const isTouch = () => ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
-    if (isTouch() || window.innerWidth < 768) {
-      if (dot) dot.style.display = 'none'
-      if (ring) ring.style.display = 'none'
-      return
-    }
 
     let mx = 0, my = 0, rx = 0, ry = 0
     let rafId
+    let active = false
+
+    function applyVisibility() {
+      const shouldShow = !isTouch() && window.innerWidth >= 768
+      if (shouldShow === active) return
+      active = shouldShow
+      if (dot) dot.style.display = active ? '' : 'none'
+      if (ring) ring.style.display = active ? '' : 'none'
+    }
+    applyVisibility()
+    window.addEventListener('resize', applyVisibility, { passive: true })
 
     const onMove = e => { mx = e.clientX; my = e.clientY }
     window.addEventListener('mousemove', onMove)
 
     function loop() {
+      if (!active) { rafId = requestAnimationFrame(loop); return }
       if (dot) {
         dot.style.position = 'fixed'
         dot.style.left = mx + 'px'
