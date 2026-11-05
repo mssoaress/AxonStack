@@ -15,15 +15,20 @@ export default function App() {
 
   return (
     <>
+      <a href="#conteudo" className="skip-link">
+        Pular para o conteúdo
+      </a>
       <NetCanvas />
       <CustomCursor />
       <Navbar />
-      <Hero />
-      <ClientsStrip />
-      <Services />
-      <Process />
-      <Diferenciais />
-      <CtaFinal />
+      <main id="conteudo" tabIndex={-1}>
+        <Hero />
+        <ClientsStrip />
+        <Services />
+        <Process />
+        <Diferenciais />
+        <CtaFinal />
+      </main>
       <Footer />
     </>
   )

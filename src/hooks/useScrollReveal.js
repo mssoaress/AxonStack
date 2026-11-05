@@ -1,25 +1,49 @@
 import { useEffect } from 'react'
 
-// Hook to set up IntersectionObserver based scroll reveal for .reveal elements
+// Revela elementos .reveal e .diff-item ao entrarem na viewport (uma única vez).
+// Com prefers-reduced-motion, o CSS já os exibe sem transição.
 export function useScrollReveal() {
   useEffect(() => {
-    const revealEls = document.querySelectorAll('.reveal')
-    const revealObs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') })
-    }, { threshold: 0.1 })
-    revealEls.forEach(el => revealObs.observe(el))
+    if (typeof IntersectionObserver === 'undefined') {
+      document.querySelectorAll('.reveal, .diff-item').forEach((el) => el.classList.add('visible'))
+      return undefined
+    }
 
-    const diffItems = document.querySelectorAll('.diff-item')
-    const diffObs = new IntersectionObserver(entries => {
-      entries.forEach((e, i) => {
-        if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 110)
-      })
-    }, { threshold: 0.08 })
-    diffItems.forEach(el => diffObs.observe(el))
+    const timers = new Set()
+
+    const revealObs = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return
+          e.target.classList.add('visible')
+          obs.unobserve(e.target)
+        })
+      },
+      { threshold: 0.1 },
+    )
+    document.querySelectorAll('.reveal').forEach((el) => revealObs.observe(el))
+
+    const diffObs = new IntersectionObserver(
+      (entries, obs) => {
+        entries
+          .filter((e) => e.isIntersecting)
+          .forEach((e, i) => {
+            obs.unobserve(e.target)
+            const id = setTimeout(() => {
+              timers.delete(id)
+              e.target.classList.add('visible')
+            }, i * 110)
+            timers.add(id)
+          })
+      },
+      { threshold: 0.08 },
+    )
+    document.querySelectorAll('.diff-item').forEach((el) => diffObs.observe(el))
 
     return () => {
       revealObs.disconnect()
       diffObs.disconnect()
+      timers.forEach(clearTimeout)
     }
   }, [])
 }

@@ -1,0 +1,166 @@
+<!doctype html>
+<!--
+  Fonte da imagem Open Graph (public/img/og-image.png, 1200×630).
+  Para regenerar (macOS, com as dependências instaladas):
+    npm run og-image
+-->
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      @font-face {
+        font-family: 'Megrim';
+        src: url('../node_modules/@fontsource/megrim/files/megrim-latin-400-normal.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'Inter';
+        font-weight: 400;
+        src: url('../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'Inter';
+        font-weight: 500;
+        src: url('../node_modules/@fontsource/inter/files/inter-latin-500-normal.woff2')
+          format('woff2');
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #000;
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+      }
+      canvas {
+        position: absolute;
+        inset: 0;
+        width: 1200px;
+        height: 630px;
+      }
+      .content {
+        position: absolute;
+        inset: 0;
+        padding: 72px 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .brand img {
+        width: 72px;
+        height: 72px;
+      }
+      .brand span {
+        font-family: 'Megrim', cursive;
+        font-size: 34px;
+        letter-spacing: 4px;
+      }
+      h1 {
+        font-family: 'Megrim', cursive;
+        font-weight: 400;
+        font-size: 76px;
+        line-height: 0.98;
+        letter-spacing: 2px;
+        max-width: 760px;
+      }
+      h1 span {
+        color: #e85002;
+      }
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        font-size: 22px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .tag {
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #e85002;
+      }
+      .rule {
+        width: 120px;
+        height: 2px;
+        background: #e85002;
+        margin-bottom: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c" width="2400" height="1260"></canvas>
+    <div class="content">
+      <div class="brand">
+        <img src="../public/img/logo-512.png" alt="" />
+        <span>AXON STACK</span>
+      </div>
+      <h1>Da Infraestrutura à <span>Criação</span> de Sistemas</h1>
+      <div class="footer">
+        <div>
+          <div class="rule"></div>
+          <div class="tag">Infraestrutura · Cloud · Software</div>
+        </div>
+        <div>axonstack.dev</div>
+      </div>
+    </div>
+    <script>
+      // Mesmo algoritmo de ondas do HeroCanvas, congelado em um quadro.
+      const canvas = document.getElementById('c')
+      const ctx = canvas.getContext('2d')
+      ctx.scale(2, 2)
+      const W = 1200
+      const H = 630
+      const t = 180
+      const bg = ctx.createRadialGradient(W * 0.78, H * 0.45, 0, W * 0.78, H * 0.45, W * 0.6)
+      bg.addColorStop(0, 'rgba(102,31,26,0.45)')
+      bg.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = bg
+      ctx.fillRect(0, 0, W, H)
+      for (let i = 0; i < 10; i++) {
+        const ln = {
+          phase: i * 0.5,
+          amplitude: 40 + i * 12,
+          speed: 0.006 + i * 0.001,
+          y: 0.2 + i * 0.07,
+          width: 0.6 + (i % 3) * 0.45,
+          alpha: 0.07 + i * 0.02,
+        }
+        ctx.beginPath()
+        for (let x = 0; x <= W; x += 4) {
+          const y =
+            ln.y * H +
+            Math.sin(x * 0.006 + t * ln.speed + ln.phase) * ln.amplitude +
+            Math.sin(x * 0.003 + t * ln.speed * 0.6 + ln.phase * 1.7) * (ln.amplitude * 0.33)
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
+        }
+        const g = ctx.createLinearGradient(0, 0, W, 0)
+        if (i % 3 === 1) {
+          g.addColorStop(0, 'rgba(232,80,2,0)')
+          g.addColorStop(0.45, `rgba(232,80,2,${Math.min(1, ln.alpha * 2.4)})`)
+          g.addColorStop(0.8, `rgba(200,60,0,${Math.min(1, ln.alpha * 1.8)})`)
+          g.addColorStop(1, 'rgba(232,80,2,0)')
+        } else {
+          g.addColorStop(0, 'rgba(255,255,255,0)')
+          g.addColorStop(0.55, `rgba(255,255,255,${ln.alpha})`)
+          g.addColorStop(1, 'rgba(255,255,255,0)')
+        }
+        ctx.strokeStyle = g
+        ctx.lineWidth = ln.width
+        ctx.stroke()
+      }
+    </script>
+  </body>
+</html>

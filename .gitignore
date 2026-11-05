@@ -1,0 +1,46 @@
+# Dependências
+node_modules/
+
+# Build e artefatos
+dist/
+dist-ssr/
+*.local
+coverage/
+
+# Caches de ferramentas
+.vite/
+.eslintcache
+.cache/
+*.tsbuildinfo
+
+# Variáveis de ambiente (mantém os exemplos versionados)
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Sistema operacional
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editores
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Material de marketing (posts, identidade visual em alta resolução).
+# Mantido apenas localmente; não faz parte do site. Ver README.
+marketing/

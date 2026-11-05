@@ -1,10 +1,20 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import { StrictMode } from 'react'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import App from './App.jsx'
+import './fonts.js'
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+const container = document.getElementById('root')
+const app = (
+  <StrictMode>
     <App />
-  </React.StrictMode>,
+  </StrictMode>
 )
+
+// Em produção o HTML vem pré-renderizado (scripts/prerender.js): hidrata.
+// No `npm run dev` o #root chega vazio: renderiza do zero.
+if (container.firstElementChild) {
+  hydrateRoot(container, app)
+} else {
+  createRoot(container).render(app)
+}

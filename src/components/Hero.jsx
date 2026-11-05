@@ -1,43 +1,99 @@
 import { useEffect, useRef } from 'react'
 import HeroCanvas from './HeroCanvas.jsx'
+import { InstagramIcon } from './Icons.jsx'
+import { CONTACT } from '../constants.js'
 
 export default function Hero() {
   const contentRef = useRef(null)
 
+  // Parallax do conteúdo do hero (desativado com prefers-reduced-motion).
   useEffect(() => {
-    const onScroll = () => {
+    const content = contentRef.current
+    const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)')
+    if (!content) return undefined
+
+    let rafId = 0
+
+    const apply = () => {
+      rafId = 0
       const sy = window.scrollY
-      const hc = contentRef.current
-      if (!hc) return
-      if (sy < window.innerHeight) {
-        const opacity = Math.max(0, 1 - sy / (window.innerHeight * 0.75))
-        hc.style.transform = `translateY(${sy * 0.22}px)`
-        hc.style.opacity = opacity
+      const vh = window.innerHeight
+      // Viewport ainda sem dimensões (aba em segundo plano, por exemplo): não esconde nada.
+      if (!vh) return
+      if (sy < vh) {
+        content.style.transform = `translateY(${sy * 0.22}px)`
+        content.style.opacity = String(Math.max(0, 1 - sy / (vh * 0.75)))
       } else {
-        hc.style.opacity = 0
+        content.style.opacity = '0'
       }
     }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+
+    const onScroll = () => {
+      if (!rafId) rafId = requestAnimationFrame(apply)
+    }
+
+    const reset = () => {
+      content.style.transform = ''
+      content.style.opacity = ''
+    }
+
+    const enable = () => {
+      window.addEventListener('scroll', onScroll, { passive: true })
+      // Página recarregada já rolada: aplica o estado correspondente.
+      if (window.scrollY > 0) onScroll()
+    }
+    const disable = () => {
+      window.removeEventListener('scroll', onScroll)
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = 0
+      reset()
+    }
+
+    const sync = () => (motionQuery?.matches ? disable() : enable())
+    sync()
+    motionQuery?.addEventListener?.('change', sync)
+
+    return () => {
+      disable()
+      motionQuery?.removeEventListener?.('change', sync)
+    }
   }, [])
 
   return (
-    <section id="hero">
+    <section id="hero" aria-labelledby="hero-title">
       <HeroCanvas />
-      <div className="hero-glow"></div>
+      <div className="hero-glow" aria-hidden="true"></div>
       <div className="hero-content" ref={contentRef}>
         <p className="hero-eyebrow">Bem-vindo à Axon Stack</p>
-        <h1 className="hero-headline">Da<br />Infraestrutura<br />à <span>Criação</span> de<br />Sistemas</h1>
-        <p className="hero-sub">Desenvolvemos e entregamos soluções tecnológicas completas para o crescimento do seu negócio.</p>
+        <h1 className="hero-headline" id="hero-title">
+          Da
+          <br />
+          Infraestrutura
+          <br />à <span>Criação</span> de
+          <br />
+          Sistemas
+        </h1>
+        <p className="hero-sub">
+          Desenvolvemos e entregamos soluções tecnológicas completas para o crescimento do seu
+          negócio.
+        </p>
         <div className="hero-actions">
-          <a href="https://instagram.com/axonstack.dev" target="_blank" rel="noopener noreferrer" className="btn-primary">
-            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
+          <a
+            href={CONTACT.instagramHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary"
+          >
+            <InstagramIcon />
             Falar no Instagram
+            <span className="sr-only"> (abre em nova aba)</span>
           </a>
-          <a href="#servicos" className="btn-ghost">Ver serviços</a>
+          <a href="#servicos" className="btn-ghost">
+            Ver serviços
+          </a>
         </div>
       </div>
-      <div className="hero-scroll">
+      <div className="hero-scroll" aria-hidden="true">
         <span>Scroll</span>
         <div className="scroll-line"></div>
       </div>
