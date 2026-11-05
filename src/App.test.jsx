@@ -11,6 +11,7 @@ describe('App', () => {
       'Nossos Serviços',
       'Nosso Processo',
       'NossosDiferenciais',
+      'PerguntasFrequentes',
       'Vamos construir a tecnologia que o seu negócio precisa.',
     ])
   })
@@ -92,5 +93,18 @@ describe('App', () => {
       expect(img).toHaveAttribute('height')
       expect(img).toHaveAttribute('alt')
     }
+  })
+
+  it('CTA principal do hero leva ao WhatsApp com mensagem pronta', () => {
+    render(<App />)
+    const hero = within(document.getElementById('hero'))
+    const cta = hero.getByRole('link', { name: /solicitar orçamento/i })
+    expect(cta.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/5521994291884\?text=/)
+    expect(cta).toHaveClass('btn-primary')
+  })
+
+  it('não renderiza a seção de projetos sem cases reais', () => {
+    render(<App />)
+    expect(document.getElementById('projetos')).toBeNull()
   })
 })

@@ -1,7 +1,6 @@
 // Dados institucionais compartilhados. Mantenha esta fonte única em sincronia com
 // os metadados/JSON-LD de index.html, public/robots.txt e public/sitemap.xml.
 
-export const SITE_URL = 'https://axonstack.dev'
 export const COMPANY_NAME = 'Axon Stack'
 export const TAGLINE = 'Infraestrutura, Cloud e Software'
 
@@ -23,6 +22,7 @@ export const NAV_LINKS = [
   { href: '#servicos', label: 'Serviços' },
   { href: '#processo', label: 'Processo' },
   { href: '#diferenciais', label: 'Diferenciais' },
+  { href: '#faq', label: 'FAQ' },
 ]
 
 export const CONTACT_ANCHOR = { href: '#cta-final', label: 'Contato' }

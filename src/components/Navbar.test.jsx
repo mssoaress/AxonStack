@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Navbar from './Navbar.jsx'
-import { setMedia } from '../test/setup.js'
+import { intersectionObservers, setMedia } from '../test/setup.js'
 
 function renderWithPage() {
   return render(
@@ -10,6 +10,8 @@ function renderWithPage() {
       <Navbar />
       <main>
         <a href="#x">conteúdo</a>
+        <section id="servicos" />
+        <section id="processo" />
       </main>
       <footer>rodapé</footer>
     </>,
@@ -95,5 +97,35 @@ describe('Navbar — menu mobile', () => {
     await user.click(toggle())
     unmount()
     expect(document.body.style.overflow).toBe('')
+  })
+})
+
+describe('Navbar — estados', () => {
+  const setScroll = (y) => {
+    Object.defineProperty(window, 'scrollY', { configurable: true, value: y })
+    window.dispatchEvent(new Event('scroll'))
+  }
+
+  it('assume o estado de vidro ao rolar e volta no topo', () => {
+    renderWithPage()
+    const nav = document.getElementById('navbar')
+    expect(nav).not.toHaveClass('scrolled')
+    act(() => setScroll(200))
+    expect(nav).toHaveClass('scrolled')
+    act(() => setScroll(0))
+    expect(nav).not.toHaveClass('scrolled')
+  })
+
+  it('marca a seção visível como atual na navegação', () => {
+    renderWithPage()
+    const io = [...intersectionObservers].find((o) =>
+      [...o.targets].some((t) => t.id === 'processo'),
+    )
+    act(() =>
+      io.callback([{ target: document.getElementById('processo'), isIntersecting: true }], io),
+    )
+    const links = screen.getAllByRole('link', { name: 'Processo' })
+    links.forEach((a) => expect(a).toHaveAttribute('aria-current', 'true'))
+    expect(screen.getAllByRole('link', { name: 'Serviços' })[0]).not.toHaveAttribute('aria-current')
   })
 })

@@ -2,7 +2,7 @@ export default function Process() {
   return (
     <section id="processo" aria-labelledby="processo-title">
       <div className="container">
-        <div className="process-header">
+        <div className="section-header">
           <p className="section-label reveal">Como trabalhamos</p>
           <h2 className="section-title reveal reveal-delay-1" id="processo-title">
             Nosso Processo

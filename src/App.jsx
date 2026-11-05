@@ -6,6 +6,8 @@ import ClientsStrip from './components/ClientsStrip.jsx'
 import Services from './components/Services.jsx'
 import Process from './components/Process.jsx'
 import Diferenciais from './components/Diferenciais.jsx'
+import Cases from './components/Cases.jsx'
+import Faq from './components/Faq.jsx'
 import CtaFinal from './components/CtaFinal.jsx'
 import Footer from './components/Footer.jsx'
 import { useScrollReveal } from './hooks/useScrollReveal.js'
@@ -27,6 +29,8 @@ export default function App() {
         <Services />
         <Process />
         <Diferenciais />
+        <Cases />
+        <Faq />
         <CtaFinal />
       </main>
       <Footer />

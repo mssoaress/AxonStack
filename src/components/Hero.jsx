@@ -1,7 +1,15 @@
 import { useEffect, useRef } from 'react'
 import HeroCanvas from './HeroCanvas.jsx'
-import { InstagramIcon } from './Icons.jsx'
+import { WhatsAppIcon } from './Icons.jsx'
 import { CONTACT } from '../constants.js'
+
+// Camadas exibidas no painel do hero (desktop): resumo fiel dos serviços da seção #servicos.
+const STACK_LAYERS = [
+  { layer: 'Aplicações', detail: 'Sistemas, SaaS, automações e integrações' },
+  { layer: 'Presença digital', detail: 'Sites e landing pages' },
+  { layer: 'Cloud', detail: 'Nuvem, VPS e hospedagem' },
+  { layer: 'Infraestrutura', detail: 'Servidores e e-mail corporativo' },
+]
 
 export default function Hero() {
   const contentRef = useRef(null)
@@ -64,34 +72,54 @@ export default function Hero() {
       <HeroCanvas />
       <div className="hero-glow" aria-hidden="true"></div>
       <div className="hero-content" ref={contentRef}>
-        <p className="hero-eyebrow">Bem-vindo à Axon Stack</p>
-        <h1 className="hero-headline" id="hero-title">
-          Da
-          <br />
-          Infraestrutura
-          <br />à <span>Criação</span> de
-          <br />
-          Sistemas
-        </h1>
-        <p className="hero-sub">
-          Desenvolvemos e entregamos soluções tecnológicas completas para o crescimento do seu
-          negócio.
-        </p>
-        <div className="hero-actions">
-          <a
-            href={CONTACT.instagramHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary"
-          >
-            <InstagramIcon />
-            Falar no Instagram
-            <span className="sr-only"> (abre em nova aba)</span>
-          </a>
-          <a href="#servicos" className="btn-ghost">
-            Ver serviços
-          </a>
+        <div className="hero-text">
+          <p className="hero-eyebrow">
+            <span className="status-dot" aria-hidden="true"></span>
+            Software · Infraestrutura · Cloud
+          </p>
+          <h1 className="hero-headline" id="hero-title">
+            Da
+            <br />
+            Infraestrutura
+            <br />à <span>Criação</span> de
+            <br />
+            Sistemas
+          </h1>
+          <p className="hero-sub">
+            Desenvolvemos sistemas, sites e infraestrutura em nuvem sob medida para empresas — do
+            servidor ao software, com engenharia, segurança e acompanhamento contínuo.
+          </p>
+          <div className="hero-actions">
+            <a
+              href={CONTACT.whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary"
+            >
+              <WhatsAppIcon />
+              Solicitar orçamento
+              <span className="sr-only"> pelo WhatsApp (abre em nova aba)</span>
+            </a>
+            <a href="#servicos" className="btn btn-glass">
+              Ver serviços
+            </a>
+          </div>
         </div>
+
+        <aside className="hero-stack glass" aria-labelledby="hero-stack-title">
+          <p className="hero-stack-title" id="hero-stack-title">
+            Sua stack, de ponta a ponta
+          </p>
+          <ol className="hero-stack-list">
+            {STACK_LAYERS.map(({ layer, detail }) => (
+              <li key={layer}>
+                <span className="hero-stack-layer">{layer}</span>
+                <span className="hero-stack-detail">{detail}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="hero-stack-foot">Um único parceiro do servidor ao software.</p>
+        </aside>
       </div>
       <div className="hero-scroll" aria-hidden="true">
         <span>Scroll</span>

@@ -50,7 +50,9 @@ npm run dev     # servidor de desenvolvimento (http://localhost:5173)
 1. `vite build` — bundle do cliente em `dist/`;
 2. `vite build --ssr src/entry-server.jsx` — versão de servidor do app em `dist-ssr/`;
 3. `node scripts/prerender.js` — renderiza o app com `renderToString` e injeta o HTML no
-   marcador `<!--app-html-->` de `dist/index.html`; depois remove `dist-ssr/`.
+   marcador `<!--app-html-->` de `dist/index.html`, embute o CSS, faz preload da fonte do
+   título e gera a **Content-Security-Policy** (`<meta>`) com hashes dos `<style>` embutidos;
+   depois remove `dist-ssr/`.
 
 Assim o HTML entregue já contém todo o conteúdo (bom para SEO e pré-visualizações), e o
 `src/main.jsx` usa `hydrateRoot` para ativar a interatividade. No `npm run dev` o `#root`
@@ -61,10 +63,12 @@ chega vazio e o app é renderizado normalmente com `createRoot`.
 
 ## Deploy
 
-O resultado é um site estático: publique o conteúdo de `dist/` em qualquer hospedagem
-estática (servindo `index.html` na raiz). `robots.txt`, `sitemap.xml` e as imagens de
-`public/` são copiados para `dist/` automaticamente. A configuração da hospedagem/DNS
-atual não faz parte deste repositório.
+O resultado é um site estático: publique o conteúdo de `dist/` (hoje hospedado na Vercel,
+com Build `npm run build` e Output `dist`). `robots.txt`, `sitemap.xml` e as imagens de
+`public/` são copiados para `dist/` automaticamente.
+
+Cabeçalhos de segurança recomendados, pendências de domínio (`www` × raiz) e a situação do
+deploy estão em [`docs/seguranca-e-deploy.md`](docs/seguranca-e-deploy.md).
 
 ## Estrutura
 
@@ -73,7 +77,7 @@ index.html                 metadados, Open Graph, JSON-LD e marcador da pré-ren
 public/
   robots.txt, sitemap.xml
   img/
-    logo-icone.png         logo exibido na navbar/rodapé (164 px, 2× para Retina)
+    logo-icone*.png        logo com transparência (76/112/164 px, via srcset)
     favicon-32.png         favicon
     apple-touch-icon.png   ícone iOS (180 px)
     logo-512.png           logo usado no JSON-LD
@@ -81,33 +85,64 @@ public/
 assets-source/
   logo-icone-2000.png      logo original em alta resolução (não vai para o site)
   og-image.html            fonte da imagem Open Graph
-scripts/prerender.js       injeta o HTML pré-renderizado em dist/index.html
+scripts/
+  prerender.js             pós-build: HTML pré-renderizado, CSS embutido, preload e CSP
+  logo-alpha.js            gera o logo com transparência a partir do original (fundo preto)
+docs/seguranca-e-deploy.md cabeçalhos HTTP, domínio e configuração da Vercel
 src/
   main.jsx                 entrada do cliente (hydrate/render)
   entry-server.jsx         entrada usada na pré-renderização
   App.jsx                  composição da página (skip link, <main>, seções)
   constants.js             contatos, links e dados institucionais (fonte única)
   fonts.js                 importação das fontes auto-hospedadas
-  index.css                estilos globais, breakpoints e prefers-reduced-motion
+  index.css                design system (tokens), Liquid Glass, seções, breakpoints e reduced motion
   hooks/
     useCanvasAnimation.js  ciclo de vida dos canvas (DPR, pausa, reduced motion, cleanup)
     useScrollReveal.js     revelação de .reveal/.diff-item ao rolar
   components/
-    Navbar.jsx             navbar + menu mobile acessível
-    Hero.jsx               hero com parallax
+    Navbar.jsx             navbar de vidro, seção ativa e menu mobile acessível
+    Hero.jsx               hero com parallax e painel da stack (desktop)
     HeroCanvas.jsx         ondas animadas do hero
     NetCanvas.jsx          rede de partículas de fundo
     ClientsStrip.jsx       faixa com as áreas de atuação
-    Services.jsx           "Nossos Serviços"
+    Services.jsx           "Nossos Serviços" (dados + brilho que segue o mouse)
     Process.jsx            "Nosso Processo"
     Diferenciais.jsx       "Diferenciais"
     DiffCanvas.jsx         animação hexagonal
+    Cases.jsx              estrutura para projetos reais (oculta enquanto a lista estiver vazia)
+    Faq.jsx                perguntas frequentes (<details> nativo)
     CtaFinal.jsx           chamada final com contatos
     Footer.jsx             rodapé
     CustomCursor.jsx       cursor customizado (apenas mouse/trackpad)
     Icons.jsx              ícones de contato reutilizados
   test/setup.js            mocks de navegador para os testes
 ```
+
+## Design system
+
+Os tokens ficam no `:root` de `src/index.css`, derivados da identidade existente:
+
+- **Cores**: `--color-primary` (#E85002), `--color-primary-strong` (#C94500, AA com branco),
+  texto em `--color-text` / `--color-text-muted` / `--color-text-subtle`, bordas translúcidas.
+- **Tipografia**: `--font-display` (Megrim, títulos) e `--font-body` (Inter), escala `--text-*`.
+- **Espaço e forma**: `--space-*`, `--gutter` e `--section-y` fluidos, `--radius-sm…xl`.
+- **Movimento**: `--ease-out` e `--duration-fast/normal/slow`.
+
+### Liquid Glass
+
+- `.glass` — superfície translúcida com `backdrop-filter`, reflexo na borda (gradiente
+  mascarado no anel de 1px) e destaque superior. Usada na navbar (ao rolar), no painel do
+  hero, nos cards de serviço e nos botões secundários (`.btn-glass`).
+- CTA final e FAQ — mesmo visual **sem** blur, para áreas grandes (o blur sobre o
+  canvas animado é recalculado a cada quadro).
+- **Fallback**: sem suporte a `backdrop-filter` (`@supports`), a tinta fica quase opaca e o
+  texto mantém o contraste. No mobile os cards dispensam o blur para economizar GPU.
+
+### Botões
+
+`.btn` + `.btn-primary` (laranja sólido, brilho no hover), `.btn-glass` (vidro),
+`.btn-outline` (CTA da navbar) e `.btn-lg`. Todos com `hover`, `active`, `focus-visible`,
+`disabled`/`aria-disabled` e altura mínima de 44–56 px.
 
 ## Animações e acessibilidade
 
@@ -124,7 +159,9 @@ src/
 
 ## Conteúdo e dados institucionais
 
-Contatos e links ficam em `src/constants.js`. Se algum dado mudar, atualize também:
+Contatos e links ficam em `src/constants.js`. Projetos reais entram em `CASES`
+(`src/components/Cases.jsx`), com dados autorizados pelo cliente — a seção só aparece quando a
+lista não está vazia. Se algum dado mudar, atualize também:
 `index.html` (metadados e JSON-LD), `public/sitemap.xml` / `public/robots.txt` (domínio)
 e `assets-source/og-image.html` (regenere com `npm run og-image`).
 

@@ -2,12 +2,12 @@ import { InstagramIcon, MailIcon, PhoneIcon, WhatsAppIcon } from './Icons.jsx'
 import { COMPANY_NAME, CONTACT, CONTACT_ANCHOR, NAV_LINKS, TAGLINE } from '../constants.js'
 
 const SERVICE_LINKS = [
+  'Sistemas, SaaS e Integrações',
+  'Desenvolvimento de Sites',
   'Cloud Computing',
-  'Infraestrutura',
+  'Infraestrutura de Servidores',
   'VPS e Hospedagem',
   'E-mail Corporativo',
-  'Desenvolvimento Web',
-  'Sistemas SaaS',
 ]
 
 export default function Footer() {
@@ -29,6 +29,9 @@ export default function Footer() {
             <span className="nav-logo-text footer-logo-text">AXON STACK</span>
           </div>
           <p className="footer-tagline">{TAGLINE}</p>
+          <p className="footer-pitch">
+            Sistemas, sites e infraestrutura em nuvem sob medida — do servidor ao software.
+          </p>
           <div className="footer-socials">
             <a
               href={CONTACT.whatsappHref}

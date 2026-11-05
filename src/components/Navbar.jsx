@@ -4,18 +4,52 @@ import { CONTACT_ANCHOR, NAV_LINKS } from '../constants.js'
 // Mesmo breakpoint do CSS em que o hamburger aparece.
 const DESKTOP_QUERY = '(min-width: 769px)'
 
+const SECTION_IDS = [...NAV_LINKS, CONTACT_ANCHOR].map(({ href }) => href.slice(1))
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [activeId, setActiveId] = useState('')
   const drawerRef = useRef(null)
   const toggleRef = useRef(null)
 
+  // Estado "rolado" da navbar (vidro). Só atualiza o React quando o valor muda.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
+    let last = null
+    const onScroll = () => {
+      const next = window.scrollY > 40
+      if (next !== last) {
+        last = next
+        setScrolled(next)
+      }
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Seção ativa: a que cruza uma faixa estreita no meio da viewport.
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return undefined
+    const sections = SECTION_IDS.map((id) => document.getElementById(id)).filter(Boolean)
+    const visible = new Set()
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) =>
+          e.isIntersecting ? visible.add(e.target.id) : visible.delete(e.target.id),
+        )
+        setActiveId(SECTION_IDS.find((id) => visible.has(id)) ?? '')
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    )
+    sections.forEach((s) => observer.observe(s))
+    return () => observer.disconnect()
+  }, [])
+
+  const linkProps = (href) => {
+    const isActive = href.slice(1) === activeId
+    return { 'aria-current': isActive ? 'true' : undefined, 'data-active': isActive || undefined }
+  }
 
   const closeMenu = useCallback((restoreFocus = false) => {
     setOpen(false)
@@ -87,17 +121,25 @@ export default function Navbar() {
         hidden={!open}
       >
         {NAV_LINKS.map(({ href, label }) => (
-          <a key={href} href={href} onClick={() => closeMenu(false)}>
+          <a key={href} href={href} onClick={() => closeMenu(false)} {...linkProps(href)}>
             {label}
           </a>
         ))}
-        <a href={CONTACT_ANCHOR.href} className="nav-cta-drawer" onClick={() => closeMenu(false)}>
+        <a
+          href={CONTACT_ANCHOR.href}
+          className="btn btn-primary nav-cta-drawer"
+          onClick={() => closeMenu(false)}
+        >
           {CONTACT_ANCHOR.label}
         </a>
       </nav>
 
       {/* NAVBAR */}
-      <nav id="navbar" className={scrolled ? 'scrolled' : ''} aria-label="Navegação principal">
+      <nav
+        id="navbar"
+        className={`${scrolled ? 'scrolled' : ''}${open ? ' menu-open' : ''}`.trim() || undefined}
+        aria-label="Navegação principal"
+      >
         <a href="#hero" className="nav-logo" aria-label="Axon Stack — início">
           <img
             src="/img/logo-icone.png"
@@ -115,11 +157,17 @@ export default function Navbar() {
         <ul className="nav-links">
           {NAV_LINKS.map(({ href, label }) => (
             <li key={href}>
-              <a href={href}>{label}</a>
+              <a href={href} {...linkProps(href)}>
+                {label}
+              </a>
             </li>
           ))}
           <li>
-            <a href={CONTACT_ANCHOR.href} className="nav-cta">
+            <a
+              href={CONTACT_ANCHOR.href}
+              className="btn btn-outline nav-cta"
+              {...linkProps(CONTACT_ANCHOR.href)}
+            >
               {CONTACT_ANCHOR.label}
             </a>
           </li>
