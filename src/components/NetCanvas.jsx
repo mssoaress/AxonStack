@@ -4,9 +4,10 @@ import { useCanvasAnimation } from '../hooks/useCanvasAnimation.js'
 const ORANGE = '232,80,2'
 const GLOW_SPRITE_SIZE = 64
 
-// Configuração da rede de acordo com a largura disponível.
-function getConfig(width) {
-  return width < 600 ? { count: 22, dist: 120 } : { count: 42, dist: 155 }
+// Configuração da rede de acordo com a largura disponível (mais leve em aparelhos modestos).
+function getConfig(width, lowPower) {
+  if (width < 600) return lowPower ? { count: 16, dist: 115 } : { count: 22, dist: 120 }
+  return lowPower ? { count: 28, dist: 150 } : { count: 42, dist: 155 }
 }
 
 // Brilho laranja pré-renderizado uma única vez (evita criar gradientes a cada quadro).
@@ -23,7 +24,7 @@ function createGlowSprite() {
   return sprite
 }
 
-function createNetScene(ctx) {
+function createNetScene(ctx, { lowPower = false } = {}) {
   let W = 0
   let H = 0
   let dist = 155
@@ -53,7 +54,7 @@ function createNetScene(ctx) {
       }
       W = width
       H = height
-      const config = getConfig(width)
+      const config = getConfig(width, lowPower)
       dist = config.dist
       while (nodes.length < config.count) nodes.push(makeNode())
       nodes.length = config.count

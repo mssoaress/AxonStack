@@ -27,6 +27,32 @@ describe('CustomCursor', () => {
     expect(active()).toBe(true)
   })
 
+  it('não ativa com prefers-reduced-motion', () => {
+    setMedia(FINE, true)
+    setMedia('(prefers-reduced-motion: reduce)', true)
+    render(<CustomCursor />)
+    move()
+    expect(active()).toBe(false)
+  })
+
+  it('some sobre campos de texto e destaca elementos clicáveis', () => {
+    setMedia(FINE, true)
+    const { container } = render(
+      <>
+        <CustomCursor />
+        <input aria-label="campo" />
+        <a href="#x">link</a>
+      </>,
+    )
+    const ring = container.querySelector('.cursor-ring')
+    move()
+    fireEvent.pointerOver(container.querySelector('input'))
+    expect(ring).toHaveClass('is-hidden')
+    fireEvent.pointerOver(container.querySelector('a'))
+    expect(ring).toHaveClass('is-hover')
+    expect(ring).not.toHaveClass('is-hidden')
+  })
+
   it('ignora toques em telas híbridas', () => {
     setMedia(FINE, true)
     render(<CustomCursor />)

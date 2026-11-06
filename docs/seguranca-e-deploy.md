@@ -32,6 +32,16 @@ produção**.
 A CSP via `<meta>` não suporta `frame-ancestors`, `report-uri` nem `sandbox` — por isso a
 proteção contra _clickjacking_ precisa vir de cabeçalho HTTP (abaixo).
 
+**Formulário de orçamento e CSP.** O formulário não faz `submit` para nenhum endereço: o
+JavaScript monta a mensagem e abre `https://wa.me/…` (nova aba) ou `mailto:`. Por isso a
+diretiva `form-action 'self'` continua adequada e nenhum dado passa por servidores do site.
+Se um dia houver um backend ou serviço de formulários, inclua o domínio dele em
+`form-action` e `connect-src` em `scripts/prerender.js`.
+
+**Estilos inline.** Como a CSP não usa `unsafe-inline`, atributos `style="…"` no HTML
+pré-renderizado seriam bloqueados. Estilos dinâmicos são aplicados via `element.style`
+dentro de efeitos (permitido pela CSP); há um teste que impede `style=` no HTML gerado.
+
 > Se for adicionado algum serviço externo (analytics, chat, mapas, fontes de CDN), inclua o
 > domínio dele na CSP em `scripts/prerender.js`, senão o navegador vai bloqueá-lo.
 > A barra de ferramentas da Vercel em _preview deployments_ (`vercel.live`) também é bloqueada

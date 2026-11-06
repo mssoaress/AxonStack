@@ -23,6 +23,9 @@ const runFrame = () => {
   callbacks.forEach((cb) => cb())
 }
 
+const setCores = (n) =>
+  Object.defineProperty(navigator, 'hardwareConcurrency', { configurable: true, value: n })
+
 const setHidden = (hidden) => {
   Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden })
   document.dispatchEvent(new Event('visibilitychange'))
@@ -48,6 +51,7 @@ describe('useCanvasAnimation', () => {
       get: () => 150,
     })
     vi.stubGlobal('devicePixelRatio', 3)
+    setCores(8)
     scene.resize.mockClear()
     scene.draw.mockClear()
   })
@@ -65,6 +69,33 @@ describe('useCanvasAnimation', () => {
     expect(canvas.height).toBe(300)
     expect(fakeCtx.setTransform).toHaveBeenCalledWith(2, 0, 0, 2, 0, 0)
     expect(scene.resize).toHaveBeenCalledWith(300, 150)
+  })
+
+  it('em aparelhos modestos limita o DPR a 1,5 e avisa a cena', () => {
+    setCores(4)
+    const create = vi.fn(() => scene)
+    function LowPowerCanvas() {
+      const ref = useRef(null)
+      useCanvasAnimation(ref, create)
+      return <canvas ref={ref} />
+    }
+    const { container } = render(<LowPowerCanvas />)
+    expect(container.querySelector('canvas').width).toBe(450)
+    expect(create).toHaveBeenCalledWith(fakeCtx, { lowPower: true })
+  })
+
+  it('vários canvas compartilham um único requestAnimationFrame', () => {
+    render(
+      <>
+        <TestCanvas />
+        <TestCanvas />
+        <TestCanvas />
+      </>,
+    )
+    expect(pending.size).toBe(1)
+    runFrame()
+    expect(scene.draw).toHaveBeenCalledTimes(3 + 3) // 3 quadros iniciais (resize) + 3 do laço
+    expect(pending.size).toBe(1)
   })
 
   it('mantém um único loop mesmo com eventos repetidos', () => {

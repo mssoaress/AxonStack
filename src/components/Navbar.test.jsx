@@ -3,6 +3,7 @@ import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Navbar from './Navbar.jsx'
 import { intersectionObservers, setMedia } from '../test/setup.js'
+import { NAV_DESKTOP_QUERY } from '../constants.js'
 
 function renderWithPage() {
   return render(
@@ -86,9 +87,32 @@ describe('Navbar — menu mobile', () => {
     const user = userEvent.setup()
     renderWithPage()
     await user.click(toggle())
-    act(() => setMedia('(min-width: 769px)', true))
+    act(() => setMedia(NAV_DESKTOP_QUERY, true))
     expect(toggle()).toHaveAttribute('aria-expanded', 'false')
     expect(document.body.style.overflow).toBe('')
+  })
+
+  it('fecha ao tocar fora do painel (scrim)', async () => {
+    const user = userEvent.setup()
+    renderWithPage()
+    await user.click(toggle())
+    await user.click(document.querySelector('.nav-scrim'))
+    expect(toggle()).toHaveAttribute('aria-expanded', 'false')
+    expect(drawer()).not.toBeVisible()
+  })
+
+  it('oferece o CTA de orçamento e contatos diretos dentro do menu', async () => {
+    const user = userEvent.setup()
+    renderWithPage()
+    await user.click(toggle())
+    const menu = within(drawer())
+    expect(menu.getByRole('link', { name: /solicitar orçamento/i })).toHaveAttribute(
+      'href',
+      '#contato',
+    )
+    expect(menu.getByRole('link', { name: /whatsapp/i }).getAttribute('href')).toMatch(
+      /^https:\/\/wa\.me\//,
+    )
   })
 
   it('libera o scroll se desmontado com o menu aberto', async () => {
@@ -126,6 +150,6 @@ describe('Navbar — estados', () => {
     )
     const links = screen.getAllByRole('link', { name: 'Processo' })
     links.forEach((a) => expect(a).toHaveAttribute('aria-current', 'true'))
-    expect(screen.getAllByRole('link', { name: 'Serviços' })[0]).not.toHaveAttribute('aria-current')
+    expect(screen.getAllByRole('link', { name: 'Soluções' })[0]).not.toHaveAttribute('aria-current')
   })
 })

@@ -1,7 +1,7 @@
 // Pós-processamento do build (executado por `npm run build`):
 //  1. injeta o HTML pré-renderizado do React em dist/index.html;
 //  2. embute o CSS (≈4 kB gzip) no HTML, eliminando a requisição bloqueante de renderização;
-//  3. adiciona preload da fonte do título (Megrim), usada no maior elemento da primeira dobra;
+//  3. adiciona preload da fonte do título (Space Grotesk, subconjunto latin), usada no H1 — o LCP;
 //  4. gera a Content-Security-Policy (meta) com hashes dos <style> embutidos — sem 'unsafe-inline'.
 import { createHash } from 'node:crypto'
 import { readdir, readFile, rm, writeFile } from 'node:fs/promises'
@@ -32,13 +32,13 @@ if (cssLink) {
   html = html.replace(cssLink[0], () => `<style>${css}</style>`)
 }
 
-// 3. Preload da fonte do título
+// 3. Preload da fonte do título (o H1 do hero é o maior elemento da primeira dobra)
 const assets = await readdir(assetsDir)
-const megrim = assets.find((f) => /^megrim-latin-400-normal-.*\.woff2$/.test(f))
-if (megrim) {
+const titleFont = assets.find((f) => /^space-grotesk-latin-wght-normal-.*\.woff2$/.test(f))
+if (titleFont) {
   html = html.replace(
     '</title>',
-    `</title>\n    <link rel="preload" href="/assets/${megrim}" as="font" type="font/woff2" crossorigin />`,
+    `</title>\n    <link rel="preload" href="/assets/${titleFont}" as="font" type="font/woff2" crossorigin />`,
   )
 }
 
@@ -69,6 +69,6 @@ await rm(ssrDir, { recursive: true, force: true })
 
 console.log(
   `✓ dist/index.html pré-renderizado (${(html.length / 1024).toFixed(1)} kB` +
-    `${cssLink ? ', CSS embutido' : ''}${megrim ? ', fonte com preload' : ''}` +
+    `${cssLink ? ', CSS embutido' : ''}${titleFont ? ', fonte com preload' : ''}` +
     `, CSP com ${styleHashes.length} hash(es))`,
 )

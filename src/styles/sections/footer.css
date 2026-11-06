@@ -1,0 +1,161 @@
+/* ==========================================================================
+   RODAPÉ
+   ========================================================================== */
+.site-footer {
+  padding-top: clamp(4rem, 3rem + 4vw, 7rem);
+  border-top: 1px solid var(--color-line);
+  background: linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.6));
+}
+
+.footer-top {
+  display: grid;
+  gap: var(--space-7) var(--space-6);
+}
+@media (min-width: 640px) {
+  .footer-top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1024px) {
+  .footer-top {
+    grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+  }
+  .footer-brand {
+    grid-column: auto;
+  }
+}
+
+.footer-brand {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: var(--space-5);
+}
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--hit-target);
+  border-radius: var(--radius-sm);
+}
+.footer-logo img {
+  width: 40px;
+  height: 40px;
+}
+.footer-logo-text {
+  font-family: var(--font-brand);
+  font-size: 1.375rem;
+  letter-spacing: 0.12em;
+  color: var(--color-text);
+}
+.footer-pitch {
+  max-width: 30ch;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.footer-socials {
+  display: flex;
+  gap: var(--space-2);
+}
+.footer-social {
+  display: grid;
+  place-items: center;
+  width: var(--hit-target);
+  height: var(--hit-target);
+  border: 1px solid var(--color-line-strong);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.03);
+  color: var(--color-text-muted);
+  transition:
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+.footer-social:active {
+  transform: scale(var(--state-press-scale));
+}
+@media (hover: hover) and (pointer: fine) {
+  .footer-social:hover {
+    color: var(--color-accent-hi);
+    border-color: var(--color-accent-line);
+    background: var(--color-accent-soft);
+  }
+}
+
+.footer-col-title {
+  margin-bottom: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+.footer-col ul {
+  display: grid;
+  gap: var(--space-1);
+}
+.footer-col a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+  transition: color var(--duration-base) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .footer-col a:hover {
+    color: var(--color-text);
+  }
+}
+
+/* Logotipo gigante em Megrim — assinatura da marca */
+.footer-wordmark {
+  margin-top: clamp(3rem, 2rem + 4vw, 6rem);
+  font-family: var(--font-brand);
+  font-size: min(11.2vw, 10.5rem);
+  line-height: 0.9;
+  letter-spacing: 0.04em;
+  text-align: center;
+  white-space: nowrap;
+  color: rgb(255 255 255 / 0.08);
+  user-select: none;
+}
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .footer-wordmark {
+    background: linear-gradient(to bottom, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.02) 85%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-6);
+  padding-block: var(--space-6);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+.footer-top-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--hit-target);
+  color: var(--color-text-muted);
+  transition: color var(--duration-base) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .footer-top-link:hover {
+    color: var(--color-accent-hi);
+  }
+}

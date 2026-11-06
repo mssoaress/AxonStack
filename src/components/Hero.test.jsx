@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, render } from '@testing-library/react'
-import Hero from './Hero.jsx'
+import Hero, { HERO_PARALLAX_QUERY } from './Hero.jsx'
 import { setMedia } from '../test/setup.js'
 
 const REDUCED = '(prefers-reduced-motion: reduce)'
@@ -12,6 +12,7 @@ describe('Hero — parallax', () => {
     vi.stubGlobal('requestAnimationFrame', (cb) => frames.push(cb))
     vi.stubGlobal('cancelAnimationFrame', () => {})
     Object.defineProperty(window, 'innerHeight', { configurable: true, value: 800 })
+    setMedia(HERO_PARALLAX_QUERY, true)
   })
   afterEach(() => {
     vi.unstubAllGlobals()
@@ -37,6 +38,25 @@ describe('Hero — parallax', () => {
     const { container } = render(<Hero />)
     const content = container.querySelector('.hero-content')
     scrollTo(200)
+    expect(content.style.transform).toBe('')
+    expect(content.style.opacity).toBe('')
+  })
+
+  it('não aplica parallax no layout de uma coluna (mobile/tablet)', () => {
+    setMedia(HERO_PARALLAX_QUERY, false)
+    const { container } = render(<Hero />)
+    const content = container.querySelector('.hero-content')
+    scrollTo(400)
+    expect(content.style.opacity).toBe('')
+    expect(content.style.transform).toBe('')
+  })
+
+  it('desliga o parallax ao reduzir a janela para uma coluna', () => {
+    const { container } = render(<Hero />)
+    const content = container.querySelector('.hero-content')
+    scrollTo(200)
+    expect(content.style.transform).not.toBe('')
+    act(() => setMedia(HERO_PARALLAX_QUERY, false))
     expect(content.style.transform).toBe('')
     expect(content.style.opacity).toBe('')
   })

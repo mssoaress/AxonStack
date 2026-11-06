@@ -7,12 +7,24 @@ describe('pré-renderização', () => {
   it('gera o HTML completo da página no Node', () => {
     const html = render()
     expect(html).toContain('<h1')
-    expect(html).toContain('Nossos Serviços')
-    expect(html).toContain('id="cta-final"')
+    expect(html).toContain('Da infraestrutura')
+    expect(html).toContain('Tecnologia completa')
+    expect(html).toContain('id="contato"')
     expect(html).toContain('https://wa.me/5521994291884')
-    // FAQ e painel do hero também precisam estar no HTML estático (SEO)
-    expect(html).toContain('Perguntas')
+    // FAQ, diagrama do hero e formulário também precisam estar no HTML estático (SEO)
     expect(html).toContain('Como solicitar um orçamento?')
-    expect(html).toContain('Sua stack, de ponta a ponta')
+    expect(html).toContain('Uma arquitetura integrada')
+    expect(html).toContain('Solicite um orçamento')
+  })
+
+  it('não usa atributos style inline (bloqueados pela CSP sem unsafe-inline)', () => {
+    expect(render()).not.toMatch(/\sstyle="/)
+  })
+
+  it('deixa o envio do formulário desabilitado até a hidratação', () => {
+    const html = render()
+    const buttons = html.match(/<button[^>]*type="submit"[^>]*>/g)
+    expect(buttons).toHaveLength(2)
+    buttons.forEach((b) => expect(b).toContain('disabled'))
   })
 })

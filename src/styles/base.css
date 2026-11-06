@@ -1,0 +1,212 @@
+/* ==========================================================================
+   BASE — reset, tipografia de documento, acessibilidade e camadas globais
+   ========================================================================== */
+
+/* ── Fallbacks com métricas ajustadas ──
+   Enquanto as fontes web carregam, o texto usa Arial redimensionada para ocupar o mesmo
+   espaço (larguras medidas em textos do site; ascendente/descendente das próprias fontes).
+   Assim a troca de fonte não muda quebras de linha nem desloca o layout (CLS). */
+@font-face {
+  font-family: 'Space Grotesk Fallback';
+  src: local('Arial'), local('ArialMT');
+  font-weight: 300 500;
+  size-adjust: 109.9%;
+  ascent-override: 89.54%;
+  descent-override: 26.57%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Space Grotesk Fallback';
+  src: local('Arial Bold'), local('Arial-BoldMT');
+  font-weight: 600 700;
+  size-adjust: 102.1%;
+  ascent-override: 96.37%;
+  descent-override: 28.6%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('ArialMT');
+  font-weight: 300 500;
+  size-adjust: 106.4%;
+  ascent-override: 91.05%;
+  descent-override: 22.67%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial Bold'), local('Arial-BoldMT');
+  font-weight: 600 700;
+  size-adjust: 101%;
+  ascent-override: 95.92%;
+  descent-override: 23.88%;
+  line-gap-override: 0%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Âncoras não ficam escondidas atrás da navbar fixa */
+  scroll-padding-top: calc(var(--nav-height) + var(--space-5));
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* clip não cria contêiner de rolagem: mantém position: sticky funcionando */
+  overflow-x: hidden;
+}
+@supports (overflow: clip) {
+  body {
+    overflow-x: clip;
+  }
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+img {
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+::selection {
+  background: rgb(232 80 2 / 0.4);
+  color: #fff;
+}
+
+main:focus {
+  outline: none;
+}
+
+/* ── Acessibilidade ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: var(--z-skip);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-white);
+  color: var(--color-black);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  transform: translateY(-200%);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+.skip-link:focus {
+  transform: none;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* ── Camadas globais ── */
+/* Rede neural em canvas atrás de toda a página */
+#net-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+/* Todo o conteúdo fica acima do canvas */
+main > *,
+footer {
+  position: relative;
+  z-index: var(--z-base);
+}
+
+/* ── Barra de rolagem discreta ── */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+}
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.16);
+  border: 2px solid var(--color-bg);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}

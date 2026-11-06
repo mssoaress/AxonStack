@@ -1,0 +1,148 @@
+/* ==========================================================================
+   DIFERENCIAIS — painel em estilo planta técnica: duas fileiras de três
+   células ligadas a um núcleo central (DiffCanvas) por conectores tracejados.
+   ========================================================================== */
+.diff {
+  border-top: 1px solid var(--color-line);
+}
+
+.diff-board {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(rgb(255 255 255 / 0.022) 1px, transparent 1px) 0 0 / 2rem 2rem,
+    linear-gradient(90deg, rgb(255 255 255 / 0.022) 1px, transparent 1px) 0 0 / 2rem 2rem,
+    radial-gradient(55% 45% at 50% 50%, rgb(232 80 2 / 0.08), transparent 70%),
+    var(--color-graphite);
+  box-shadow: var(--glass-highlight);
+}
+
+.diff-row {
+  display: grid;
+}
+@media (min-width: 768px) {
+  .diff-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.diff-row + .diff-row,
+.diff-hub + .diff-row {
+  border-top: 1px solid var(--color-line);
+}
+
+.diff-cell {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding: clamp(1.5rem, 1rem + 1.6vw, 2.5rem);
+  transition:
+    var(--t-reveal, opacity 0s),
+    background-color var(--duration-base) var(--ease-out);
+}
+.diff-cell + .diff-cell {
+  border-top: 1px solid var(--color-line);
+}
+@media (min-width: 768px) {
+  .diff-cell + .diff-cell {
+    border-top: 0;
+    border-left: 1px solid var(--color-line);
+  }
+}
+
+.diff-title {
+  margin-top: var(--space-2);
+  font-size: var(--text-h4);
+  line-height: 1.25;
+}
+.diff-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* Cantoneiras de "seleção" (estilo CAD) no hover */
+.diff-cell::before,
+.diff-cell::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--color-accent-hi);
+  opacity: 0;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+  pointer-events: none;
+}
+.diff-cell::before {
+  top: 12px;
+  left: 12px;
+  border-width: 1.5px 0 0 1.5px;
+  transform: translate(5px, 5px);
+}
+.diff-cell::after {
+  right: 12px;
+  bottom: 12px;
+  border-width: 0 1.5px 1.5px 0;
+  transform: translate(-5px, -5px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .diff-cell:hover {
+    background-color: rgb(255 255 255 / 0.02);
+  }
+  .diff-cell:hover::before,
+  .diff-cell:hover::after {
+    opacity: 1;
+    transform: none;
+  }
+  .diff-cell:hover .icon-tile {
+    border-color: var(--color-accent-line);
+    box-shadow:
+      var(--glass-highlight),
+      0 0 24px -6px var(--color-accent-glow);
+  }
+}
+
+/* ── Núcleo central (somente desktop) ── */
+.diff-hub {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .diff-hub {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 16rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .diff-hub + .diff-row {
+    border-top: 1px solid var(--color-line);
+  }
+  .diff-links {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .diff-links line {
+    stroke: rgb(255 255 255 / 0.16);
+    stroke-width: 1;
+    stroke-dasharray: 3 6;
+    vector-effect: non-scaling-stroke;
+  }
+  .diff-core {
+    position: relative;
+    width: 16rem;
+    height: 16rem;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--color-graphite) 55%, transparent);
+  }
+  #diff-canvas {
+    width: 100%;
+    height: 100%;
+    -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent);
+    mask-image: radial-gradient(closest-side, #000 72%, transparent);
+  }
+}

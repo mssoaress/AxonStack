@@ -1,18 +1,18 @@
 # Axon Stack — site institucional
 
-Landing page da **Axon Stack** (Infraestrutura, Cloud e Software), publicada em
-[axonstack.dev](https://axonstack.dev). Página única, com animações em canvas, HTML
-pré-renderizado no build e hidratação com React.
+Site da **Axon Stack** (Software, Infraestrutura e Cloud), publicado em
+[axonstack.dev](https://axonstack.dev). Página única com HTML pré-renderizado no build,
+hidratação com React, animações em canvas e um design system próprio com Liquid Glass.
 
 ## Tecnologias
 
-| Camada      | Ferramenta                                         |
-| ----------- | -------------------------------------------------- |
-| UI          | React 18                                           |
-| Build / dev | Vite 7 + `@vitejs/plugin-react`                    |
-| Fontes      | Megrim e Inter auto-hospedadas via `@fontsource`   |
-| Testes      | Vitest 4 + Testing Library + jsdom                 |
-| Qualidade   | ESLint 9 (flat config, React + Hooks) e Prettier 3 |
+| Camada      | Ferramenta                                                 |
+| ----------- | ---------------------------------------------------------- |
+| UI          | React 18                                                   |
+| Build / dev | Vite 7 + `@vitejs/plugin-react`                            |
+| Fontes      | Space Grotesk (variável), Inter e Megrim via `@fontsource` |
+| Testes      | Vitest 4 + Testing Library + jsdom                         |
+| Qualidade   | ESLint 9 (flat config, React + Hooks) e Prettier 3         |
 
 Não há backend, roteamento nem variáveis de ambiente.
 
@@ -51,15 +51,18 @@ npm run dev     # servidor de desenvolvimento (http://localhost:5173)
 2. `vite build --ssr src/entry-server.jsx` — versão de servidor do app em `dist-ssr/`;
 3. `node scripts/prerender.js` — renderiza o app com `renderToString` e injeta o HTML no
    marcador `<!--app-html-->` de `dist/index.html`, embute o CSS, faz preload da fonte do
-   título e gera a **Content-Security-Policy** (`<meta>`) com hashes dos `<style>` embutidos;
-   depois remove `dist-ssr/`.
+   título (Space Grotesk, o H1 é o LCP) e gera a **Content-Security-Policy** (`<meta>`) com
+   hashes dos `<style>` embutidos; depois remove `dist-ssr/`.
 
-Assim o HTML entregue já contém todo o conteúdo (bom para SEO e pré-visualizações), e o
-`src/main.jsx` usa `hydrateRoot` para ativar a interatividade. No `npm run dev` o `#root`
-chega vazio e o app é renderizado normalmente com `createRoot`.
+O `src/main.jsx` hidrata com `hydrateRoot` dentro de `startTransition`: o conteúdo já está
+visível e o React ativa a interatividade em fatias, sem tarefas longas na thread principal.
+No `npm run dev` o `#root` chega vazio e o app é renderizado com `createRoot`.
 
-> Componentes não podem acessar `window`/`document` durante a renderização — somente
-> dentro de `useEffect`. O teste `src/entry-server.test.jsx` garante isso.
+Regras para não quebrar a pré-renderização (cobertas por `src/entry-server.test.jsx`):
+
+- nada de `window`/`document` durante a renderização — somente dentro de `useEffect`;
+- **nada de atributo `style` inline** no JSX: a CSP não permite `unsafe-inline`. Estilos
+  dinâmicos vão por classes ou por `element.style` dentro de efeitos.
 
 ## Deploy
 
@@ -74,100 +77,129 @@ deploy estão em [`docs/seguranca-e-deploy.md`](docs/seguranca-e-deploy.md).
 
 ```
 index.html                 metadados, Open Graph, JSON-LD e marcador da pré-renderização
-public/
-  robots.txt, sitemap.xml
-  img/
-    logo-icone*.png        logo com transparência (76/112/164 px, via srcset)
-    favicon-32.png         favicon
-    apple-touch-icon.png   ícone iOS (180 px)
-    logo-512.png           logo usado no JSON-LD
-    og-image.jpg           imagem de compartilhamento (1200×630)
-assets-source/
-  logo-icone-2000.png      logo original em alta resolução (não vai para o site)
-  og-image.html            fonte da imagem Open Graph
+public/                    robots.txt, sitemap.xml e img/ (logos, favicon, og-image.jpg)
+assets-source/             logo original em alta e fonte da imagem Open Graph
 scripts/
   prerender.js             pós-build: HTML pré-renderizado, CSS embutido, preload e CSP
   logo-alpha.js            gera o logo com transparência a partir do original (fundo preto)
 docs/seguranca-e-deploy.md cabeçalhos HTTP, domínio e configuração da Vercel
 src/
-  main.jsx                 entrada do cliente (hydrate/render)
+  main.jsx                 entrada do cliente (hidratação em transição / render)
   entry-server.jsx         entrada usada na pré-renderização
-  App.jsx                  composição da página (skip link, <main>, seções)
-  constants.js             contatos, links e dados institucionais (fonte única)
-  fonts.js                 importação das fontes auto-hospedadas
-  index.css                design system (tokens), Liquid Glass, seções, breakpoints e reduced motion
+  App.jsx                  composição da página
+  constants.js             contatos, links do WhatsApp, navegação (fonte única)
+  fonts.js                 fontes auto-hospedadas
+  index.css                manifesto: importa os estilos na ordem da cascata
+  styles/
+    tokens.css             design tokens (cores, tipografia, espaço, vidro, camadas, motion)
+    base.css               reset, fallbacks de fonte, acessibilidade, camadas globais
+    motion.css             reveal, keyframes e prefers-reduced-motion
+    components.css         container, títulos, Liquid Glass, botões, badges, cards, chips
+    sections/*.css         um arquivo por seção (navbar, hero, marquee, services…)
+  content/                 textos editáveis: services, process, differentials, faq,
+                           stack (diagrama do hero) e projects (portfólio)
+  lib/
+    frameLoop.js           laço único de requestAnimationFrame para todos os canvas
+    quote.js               monta a mensagem do formulário de orçamento
   hooks/
-    useCanvasAnimation.js  ciclo de vida dos canvas (DPR, pausa, reduced motion, cleanup)
-    useScrollReveal.js     revelação de .reveal/.diff-item ao rolar
+    useCanvasAnimation.js  ciclo de vida dos canvas (DPR, pausa, reduced motion, low power)
+    useScrollReveal.js     revelação de .reveal ao rolar
   components/
-    Navbar.jsx             navbar de vidro, seção ativa e menu mobile acessível
-    Hero.jsx               hero com parallax e painel da stack (desktop)
+    Navbar.jsx             pílula de vidro, seção ativa, progresso e menu mobile flutuante
+    Hero.jsx / HeroStack   hero editorial + diagrama isométrico da stack
     HeroCanvas.jsx         ondas animadas do hero
     NetCanvas.jsx          rede de partículas de fundo
-    ClientsStrip.jsx       faixa com as áreas de atuação
-    Services.jsx           "Nossos Serviços" (dados + brilho que segue o mouse)
-    Process.jsx            "Nosso Processo"
-    Diferenciais.jsx       "Diferenciais"
-    DiffCanvas.jsx         animação hexagonal
-    Cases.jsx              estrutura para projetos reais (oculta enquanto a lista estiver vazia)
-    Faq.jsx                perguntas frequentes (<details> nativo)
-    CtaFinal.jsx           chamada final com contatos
+    Marquee.jsx            faixa de especialidades
+    Services.jsx           soluções (grade bento, benefícios, CTA por serviço)
+    Projects.jsx           portfólio editorial (oculto enquanto não houver projetos reais)
+    About.jsx              posicionamento e pilares
+    Process.jsx            timeline do processo
+    Diferenciais.jsx       painel com núcleo central (DiffCanvas)
+    DiffCanvas.jsx         animação hexagonal do núcleo
+    Faq.jsx                acordeão nativo
+    Contact.jsx            CTA final + canais de contato
+    QuoteForm.jsx          formulário de orçamento (WhatsApp ou e-mail, sem backend)
     Footer.jsx             rodapé
-    CustomCursor.jsx       cursor customizado (apenas mouse/trackpad)
-    Icons.jsx              ícones de contato reutilizados
+    SectionHeader.jsx      cabeçalho padrão das seções
+    CustomCursor.jsx       anel de realce do cursor (apenas mouse/trackpad)
+    Icons.jsx              ícones SVG inline
   test/setup.js            mocks de navegador para os testes
 ```
 
 ## Design system
 
-Os tokens ficam no `:root` de `src/index.css`, derivados da identidade existente:
+Conceito: _Premium Digital Infrastructure — Engineered Experiences_. Tokens em
+`src/styles/tokens.css`:
 
-- **Cores**: `--color-primary` (#E85002), `--color-primary-strong` (#C94500, AA com branco),
-  texto em `--color-text` / `--color-text-muted` / `--color-text-subtle`, bordas translúcidas.
-- **Tipografia**: `--font-display` (Megrim, títulos) e `--font-body` (Inter), escala `--text-*`.
-- **Espaço e forma**: `--space-*`, `--gutter` e `--section-y` fluidos, `--radius-sm…xl`.
-- **Movimento**: `--ease-out` e `--duration-fast/normal/slow`.
+- **Cores**: preto profundo `--color-bg`, grafite/carvão (`--color-graphite`,
+  `--color-charcoal`), branco suave `--color-white`; laranja `--color-accent` (#E85002) só
+  em CTAs, estados ativos, indicadores e detalhes. Texto em três níveis com contraste AA.
+- **Tipografia**: `--font-display` (Space Grotesk, títulos e interface de destaque),
+  `--font-body` (Inter), `--font-mono` (rótulos técnicos) e `--font-brand` (Megrim, apenas o
+  logotipo). Escala fluida `--text-*` com `clamp()`.
+- **Espaço e forma**: `--space-1…10`, `--gutter`, `--section-y`, `--container*`,
+  `--radius-xs…2xl`, sombras `--shadow-*`, camadas `--z-*`.
+- **Movimento**: `--ease-out/in-out/spring`, `--duration-*`.
+- **Breakpoints** (documentados no topo de `tokens.css`): 480 · 768 · 1024 · 1280 · 1536.
+
+### Componentes base (`components.css`)
+
+`.container`, `.section`, `.section-head` (+ `--split`), `.eyebrow`, `.section-title`,
+`.section-lead`, `.text-gradient`, `.glass` (+ `--clear`/`--dense`), `.btn` (+ `-primary`,
+`-glass`, `-ghost`, `-sm`, `-lg`, `-block`), `.text-link`, `.badge`, `.status-dot`, `.index`,
+`.chip`, `.icon-tile`, `.card` (+ `--interactive`, `--spotlight`) e `.check-list`.
 
 ### Liquid Glass
 
-- `.glass` — superfície translúcida com `backdrop-filter`, reflexo na borda (gradiente
-  mascarado no anel de 1px) e destaque superior. Usada na navbar (ao rolar), no painel do
-  hero, nos cards de serviço e nos botões secundários (`.btn-glass`).
-- CTA final e FAQ — mesmo visual **sem** blur, para áreas grandes (o blur sobre o
-  canvas animado é recalculado a cada quadro).
-- **Fallback**: sem suporte a `backdrop-filter` (`@supports`), a tinta fica quase opaca e o
-  texto mantém o contraste. No mobile os cards dispensam o blur para economizar GPU.
+`.glass` empilha reflexo especular, brilho interno, tinta translúcida, `backdrop-filter`
+(blur + saturação), aro de luz mascarado (`::before`) e destaques internos. A densidade da
+tinta varia por variante e estado (a navbar fica mais densa ao rolar). Usado na navbar, no
+menu mobile, no formulário e nos botões secundários. **Fallback**: sem `backdrop-filter`
+(`@supports`) a tinta fica sólida; sem `mask-composite`, o aro é omitido.
 
-### Botões
+## Conversão
 
-`.btn` + `.btn-primary` (laranja sólido, brilho no hover), `.btn-glass` (vidro),
-`.btn-outline` (CTA da navbar) e `.btn-lg`. Todos com `hover`, `active`, `focus-visible`,
-`disabled`/`aria-disabled` e altura mínima de 44–56 px.
+- **CTA principal** "Solicitar orçamento" (hero e navbar), **secundário** "Explorar soluções"
+  e **contextual** "Conversar sobre este serviço" em cada card.
+- Os links do WhatsApp levam mensagens iniciais conforme a origem (`WHATSAPP_MESSAGES` e
+  `serviceWhatsappLink` em `constants.js`). O número é o mesmo de sempre.
+- **Formulário de orçamento** (`QuoteForm.jsx`): não há backend, então os dados **não são
+  enviados a nenhum servidor**. A mensagem é montada e aberta no WhatsApp (nova aba) ou no
+  aplicativo de e-mail (`mailto:`); o envio é concluído pela própria pessoa, e o aviso exibido
+  nunca diz "enviado com sucesso". Até a hidratação os botões ficam desabilitados.
 
 ## Animações e acessibilidade
 
-- **Canvas** (`useCanvasAnimation`): buffer dimensionado por `devicePixelRatio` (limitado a 2),
-  um único loop de `requestAnimationFrame` por canvas, pausa fora da viewport e com a aba
-  oculta, gradientes criados só no resize.
-- **`prefers-reduced-motion: reduce`**: canvas desenham um quadro estático, parallax e
-  animações de entrada desligados, faixa de áreas parada, cursor sem efeito de atraso.
-- **Cursor customizado**: só em dispositivos com `(hover: hover) and (pointer: fine)`;
-  em touch o cursor nativo permanece.
-- **Menu mobile**: fecha com Esc, mantém o foco dentro do menu, devolve o foco ao botão,
-  torna o restante da página `inert`, fecha ao passar para desktop.
-- Foco visível (`:focus-visible`), link "Pular para o conteúdo", hierarquia H1 → H2 → H3.
+- **Canvas** (`useCanvasAnimation` + `lib/frameLoop.js`): todos compartilham um único
+  `requestAnimationFrame`; pausam fora da viewport e com a aba oculta; DPR limitado a 2 (1,5 em
+  aparelhos modestos, com menos partículas); quadro estático com movimento reduzido ou
+  economia de dados.
+- **CSS**: reveal com `translate`/`opacity`, trilho do processo e progresso da navbar com
+  animações ligadas à rolagem (`animation-timeline`, com fallback estático), menu com
+  `@starting-style`, FAQ com `::details-content`. Tudo é desligado com
+  `prefers-reduced-motion`.
+- **Fontes**: fallbacks com métricas ajustadas (`size-adjust`) evitam deslocamento de layout
+  na troca de fonte.
+- **Cursor**: o nativo permanece sempre; o anel de realce só existe com mouse e sem movimento
+  reduzido, e some sobre campos de texto.
+- **Menu mobile**: fecha com Esc ou tocando fora, mantém o foco dentro do painel, devolve o
+  foco ao botão, deixa o restante da página `inert` e fecha ao passar para desktop.
+- Foco visível, link "Pular para o conteúdo", hierarquia H1 → H2 → H3, estados ativos que não
+  dependem só de cor, alvos de toque ≥ 44 px.
 
 ## Conteúdo e dados institucionais
 
-Contatos e links ficam em `src/constants.js`. Projetos reais entram em `CASES`
-(`src/components/Cases.jsx`), com dados autorizados pelo cliente — a seção só aparece quando a
-lista não está vazia. Se algum dado mudar, atualize também:
-`index.html` (metadados e JSON-LD), `public/sitemap.xml` / `public/robots.txt` (domínio)
-e `assets-source/og-image.html` (regenere com `npm run og-image`).
+- Contatos e links: `src/constants.js`.
+- Textos das seções: `src/content/*.js`.
+- **Projetos**: adicione itens reais e autorizados em `src/content/projects.js` (o formato
+  está documentado no arquivo). Com a lista vazia, a seção e o link "Projetos" não aparecem.
+
+Se algum dado institucional mudar, atualize também `index.html` (metadados e JSON-LD),
+`public/sitemap.xml` / `public/robots.txt` (domínio) e `assets-source/og-image.html`
+(regenere com `npm run og-image`).
 
 ## Material de marketing
 
-Posts e peças de identidade visual (antes em `img/`, `src/img/` e `posts-instagram/`) não
-fazem parte do site e foram retirados do versionamento. Eles continuam disponíveis
-localmente em `marketing/` (ignorada pelo Git) e no histórico do repositório. Para
-versioná-los, prefira um repositório separado ou Git LFS.
+Posts e peças de identidade visual não fazem parte do site e ficam fora do versionamento,
+em `marketing/` (ignorada pelo Git). Para versioná-los, prefira um repositório separado ou
+Git LFS.

@@ -14,6 +14,12 @@
           format('woff2');
       }
       @font-face {
+        font-family: 'Space Grotesk';
+        font-weight: 300 700;
+        src: url('../node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2')
+          format('woff2');
+      }
+      @font-face {
         font-family: 'Inter';
         font-weight: 400;
         src: url('../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2')
@@ -68,15 +74,18 @@
         letter-spacing: 4px;
       }
       h1 {
-        font-family: 'Megrim', cursive;
-        font-weight: 400;
-        font-size: 76px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 600;
+        font-size: 80px;
         line-height: 0.98;
-        letter-spacing: 2px;
-        max-width: 760px;
+        letter-spacing: -0.045em;
+        max-width: 820px;
       }
       h1 span {
-        color: #e85002;
+        background: linear-gradient(100deg, #ffa36b 0%, #ff6b1f 45%, #e85002 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
       }
       .footer {
         display: flex;
@@ -107,11 +116,11 @@
         <img src="../public/img/logo-512.png" alt="" />
         <span>AXON STACK</span>
       </div>
-      <h1>Da Infraestrutura à <span>Criação</span> de Sistemas</h1>
+      <h1>Da infraestrutura <span>à criação de sistemas.</span></h1>
       <div class="footer">
         <div>
           <div class="rule"></div>
-          <div class="tag">Infraestrutura · Cloud · Software</div>
+          <div class="tag">Software · Infraestrutura · Cloud</div>
         </div>
         <div>axonstack.dev</div>
       </div>

@@ -1,0 +1,117 @@
+/* ==========================================================================
+   SOBRE — declaração de posicionamento em tipografia grande + cinco pilares
+   ligados por um "axônio" (linha contínua com nós).
+   ========================================================================== */
+.about {
+  border-top: 1px solid var(--color-line);
+  background: radial-gradient(50% 60% at 0% 30%, rgb(255 255 255 / 0.025), transparent 70%);
+}
+
+.about-intro {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+@media (min-width: 1024px) {
+  .about-intro {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    align-items: end;
+    gap: var(--space-8);
+  }
+}
+
+.about-statement {
+  font-size: clamp(1.875rem, 1.1rem + 3vw, 3.75rem);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--tracking-tighter);
+  max-width: 22ch;
+}
+
+.about-copy {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 34rem;
+  font-size: var(--text-md);
+  color: var(--color-text-muted);
+}
+
+.about-pillars {
+  position: relative;
+  display: grid;
+  gap: var(--space-6);
+  margin-top: clamp(3rem, 2rem + 4vw, 6rem);
+}
+@media (min-width: 640px) {
+  .about-pillars {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-6);
+  }
+}
+@media (min-width: 1024px) {
+  .about-pillars {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+  /* Linha contínua que conecta os pilares */
+  .about-pillars::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      var(--color-accent),
+      var(--color-line-strong) 30%,
+      var(--color-line-strong)
+    );
+  }
+}
+
+.about-pillar {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-line-strong);
+}
+@media (min-width: 1024px) {
+  .about-pillar {
+    border-top: 0;
+  }
+}
+/* Nó do axônio */
+.about-pillar::before {
+  content: '';
+  position: absolute;
+  top: -4.5px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--color-accent-hi);
+  border-radius: 50%;
+  background: var(--color-bg);
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+.about-pillar:first-child::before {
+  background: var(--color-accent-hi);
+  box-shadow: 0 0 14px var(--color-accent-glow);
+}
+.about-pillar h3 {
+  font-size: var(--text-h4);
+}
+.about-pillar p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+@media (hover: hover) and (pointer: fine) {
+  .about-pillar:hover::before {
+    background: var(--color-accent-hi);
+    box-shadow: 0 0 14px var(--color-accent-glow);
+  }
+}

@@ -1,0 +1,117 @@
+/* ==========================================================================
+   MOTION — entrada ao rolar, keyframes e movimento reduzido
+   Regras: animar só transform/translate/opacity; nada de loops sem propósito;
+   tudo é desligado com prefers-reduced-motion.
+   ========================================================================== */
+
+/* Registrada sem herança: só o próprio .reveal recebe as transições de entrada */
+@property --t-reveal {
+  syntax: '*';
+  inherits: false;
+}
+
+/* Reveal: usa `translate` (não `transform`) para não conflitar com hovers.
+   Componentes com transições próprias incluem var(--t-reveal) na lista. */
+.reveal {
+  --t-reveal:
+    opacity var(--duration-reveal) var(--ease-out) var(--reveal-delay, 0s),
+    translate var(--duration-reveal) var(--ease-out) var(--reveal-delay, 0s);
+  opacity: 0;
+  translate: 0 2rem;
+  transition: var(--t-reveal);
+}
+.reveal.visible {
+  opacity: 1;
+  translate: none;
+}
+.reveal-delay-1 {
+  --reveal-delay: 80ms;
+}
+.reveal-delay-2 {
+  --reveal-delay: 160ms;
+}
+.reveal-delay-3 {
+  --reveal-delay: 240ms;
+}
+.reveal-delay-4 {
+  --reveal-delay: 320ms;
+}
+.reveal-delay-5 {
+  --reveal-delay: 400ms;
+}
+.reveal-delay-6 {
+  --reveal-delay: 480ms;
+}
+
+/* ── Keyframes ── */
+@keyframes ping {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  80%,
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes beam-travel {
+  0% {
+    transform: translate3d(-50%, 0, 0) scaleY(0.4);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-50%, calc(var(--beam-distance, 300px) * -1), 0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+}
+
+/* ── Movimento reduzido: sem animações nem transições de deslocamento ── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+  .reveal {
+    opacity: 1;
+    translate: none;
+  }
+}

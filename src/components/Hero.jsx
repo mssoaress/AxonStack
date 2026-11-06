@@ -1,23 +1,22 @@
 import { useEffect, useRef } from 'react'
 import HeroCanvas from './HeroCanvas.jsx'
-import { WhatsAppIcon } from './Icons.jsx'
-import { CONTACT } from '../constants.js'
+import HeroStack from './HeroStack.jsx'
+import { ArrowUpRightIcon } from './Icons.jsx'
+import { WHATSAPP_MESSAGES, whatsappLink } from '../constants.js'
 
-// Camadas exibidas no painel do hero (desktop): resumo fiel dos serviços da seção #servicos.
-const STACK_LAYERS = [
-  { layer: 'Aplicações', detail: 'Sistemas, SaaS, automações e integrações' },
-  { layer: 'Presença digital', detail: 'Sites e landing pages' },
-  { layer: 'Cloud', detail: 'Nuvem, VPS e hospedagem' },
-  { layer: 'Infraestrutura', detail: 'Servidores e e-mail corporativo' },
-]
+// Mesmo breakpoint do CSS em que o hero passa a ter duas colunas.
+export const HERO_PARALLAX_QUERY = '(min-width: 1100px)'
 
 export default function Hero() {
   const contentRef = useRef(null)
 
-  // Parallax do conteúdo do hero (desativado com prefers-reduced-motion).
+  // Parallax do conteúdo do hero. Só no layout de duas colunas (o hero cabe inteiro na
+  // viewport); no mobile o diagrama fica abaixo da dobra e não pode sumir ao rolar.
+  // Desativado com prefers-reduced-motion.
   useEffect(() => {
     const content = contentRef.current
     const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)')
+    const wideQuery = window.matchMedia?.(HERO_PARALLAX_QUERY)
     if (!content) return undefined
 
     let rafId = 0
@@ -57,73 +56,62 @@ export default function Hero() {
       reset()
     }
 
-    const sync = () => (motionQuery?.matches ? disable() : enable())
+    const sync = () => (motionQuery?.matches || !wideQuery?.matches ? disable() : enable())
     sync()
     motionQuery?.addEventListener?.('change', sync)
+    wideQuery?.addEventListener?.('change', sync)
 
     return () => {
       disable()
       motionQuery?.removeEventListener?.('change', sync)
+      wideQuery?.removeEventListener?.('change', sync)
     }
   }, [])
 
   return (
     <section id="hero" aria-labelledby="hero-title">
       <HeroCanvas />
-      <div className="hero-glow" aria-hidden="true"></div>
-      <div className="hero-content" ref={contentRef}>
-        <div className="hero-text">
-          <p className="hero-eyebrow">
+      <div className="hero-backdrop" aria-hidden="true"></div>
+
+      <div className="container hero-content" ref={contentRef}>
+        <div className="hero-copy">
+          <p className="badge hero-eyebrow">
             <span className="status-dot" aria-hidden="true"></span>
             Software · Infraestrutura · Cloud
           </p>
-          <h1 className="hero-headline" id="hero-title">
-            Da
-            <br />
-            Infraestrutura
-            <br />à <span>Criação</span> de
-            <br />
-            Sistemas
+
+          <h1 className="hero-title" id="hero-title">
+            Da infraestrutura <span className="text-gradient">à criação de sistemas.</span>
           </h1>
+
           <p className="hero-sub">
-            Desenvolvemos sistemas, sites e infraestrutura em nuvem sob medida para empresas — do
-            servidor ao software, com engenharia, segurança e acompanhamento contínuo.
+            Desenvolvemos sistemas, sites e infraestrutura digital sob medida para empresas que
+            precisam de tecnologia confiável para crescer.
           </p>
+
           <div className="hero-actions">
             <a
-              href={CONTACT.whatsappHref}
+              href={whatsappLink(WHATSAPP_MESSAGES.quote)}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-primary"
+              className="btn btn-primary btn-lg"
             >
-              <WhatsAppIcon />
               Solicitar orçamento
               <span className="sr-only"> pelo WhatsApp (abre em nova aba)</span>
+              <ArrowUpRightIcon />
             </a>
-            <a href="#servicos" className="btn btn-glass">
-              Ver serviços
+            <a href="#servicos" className="btn btn-glass btn-lg">
+              Explorar soluções
             </a>
           </div>
         </div>
 
-        <aside className="hero-stack glass" aria-labelledby="hero-stack-title">
-          <p className="hero-stack-title" id="hero-stack-title">
-            Sua stack, de ponta a ponta
-          </p>
-          <ol className="hero-stack-list">
-            {STACK_LAYERS.map(({ layer, detail }) => (
-              <li key={layer}>
-                <span className="hero-stack-layer">{layer}</span>
-                <span className="hero-stack-detail">{detail}</span>
-              </li>
-            ))}
-          </ol>
-          <p className="hero-stack-foot">Um único parceiro do servidor ao software.</p>
-        </aside>
+        <HeroStack />
       </div>
+
       <div className="hero-scroll" aria-hidden="true">
-        <span>Scroll</span>
-        <div className="scroll-line"></div>
+        <span className="hero-scroll-line"></span>
+        Role
       </div>
     </section>
   )

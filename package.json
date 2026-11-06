@@ -19,6 +19,7 @@
     "og-image": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --disable-gpu --hide-scrollbars --allow-file-access-from-files --force-device-scale-factor=1 --virtual-time-budget=3000 --window-size=1200,630 --screenshot=\"$PWD/assets-source/og-image.png\" \"file://$PWD/assets-source/og-image.html\" && sips -s format jpeg -s formatOptions 88 assets-source/og-image.png --out public/img/og-image.jpg && rm assets-source/og-image.png"
   },
   "dependencies": {
+    "@fontsource-variable/space-grotesk": "^5.3.0",
     "@fontsource/inter": "^5.3.0",
     "@fontsource/megrim": "^5.3.0",
     "react": "^18.3.1",

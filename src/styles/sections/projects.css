@@ -1,0 +1,105 @@
+/* ==========================================================================
+   PROJETOS — composição editorial com cards de proporções diferentes.
+   Só é renderizada quando houver projetos reais em src/content/projects.js.
+   ========================================================================== */
+.projects-grid {
+  display: grid;
+  gap: var(--space-5);
+}
+@media (min-width: 1024px) {
+  .projects-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  /* Ritmo 7/5 → 5/7 depois do destaque */
+  .project-card {
+    grid-column: span 6;
+  }
+  .project-card:nth-child(4n + 2) {
+    grid-column: span 7;
+  }
+  .project-card:nth-child(4n + 3) {
+    grid-column: span 5;
+  }
+  .project-card:nth-child(4n + 4) {
+    grid-column: span 5;
+  }
+  .project-card:nth-child(4n + 5) {
+    grid-column: span 7;
+  }
+  .project-card.is-featured {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .project-card.is-featured .project-media {
+    aspect-ratio: auto;
+    min-height: 26rem;
+    border-bottom: 0;
+    border-right: 1px solid var(--color-line);
+  }
+}
+
+.project-card {
+  display: grid;
+  overflow: hidden;
+}
+
+.project-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-charcoal);
+}
+.project-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover .project-media img {
+    transform: scale(1.03);
+  }
+}
+
+.project-body {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--space-4);
+  padding: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+}
+.project-title {
+  font-size: var(--text-h3);
+}
+.is-featured .project-title {
+  font-size: clamp(1.625rem, 1.3rem + 1.2vw, 2.25rem);
+}
+.project-desc {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.project-facts {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+}
+.project-facts dt {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+.project-facts dd {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

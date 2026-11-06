@@ -1,17 +1,17 @@
 import { useEffect } from 'react'
 
-// Revela elementos .reveal e .diff-item ao entrarem na viewport (uma única vez).
-// Com prefers-reduced-motion, o CSS já os exibe sem transição.
+// Revela elementos .reveal ao entrarem na viewport (uma única vez). O escalonamento
+// vem das classes .reveal-delay-N no CSS. Com prefers-reduced-motion, o CSS já os exibe.
 export function useScrollReveal() {
   useEffect(() => {
+    const targets = document.querySelectorAll('.reveal')
+
     if (typeof IntersectionObserver === 'undefined') {
-      document.querySelectorAll('.reveal, .diff-item').forEach((el) => el.classList.add('visible'))
+      targets.forEach((el) => el.classList.add('visible'))
       return undefined
     }
 
-    const timers = new Set()
-
-    const revealObs = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries, obs) => {
         entries.forEach((e) => {
           if (!e.isIntersecting) return
@@ -19,31 +19,10 @@ export function useScrollReveal() {
           obs.unobserve(e.target)
         })
       },
-      { threshold: 0.1 },
+      { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
     )
-    document.querySelectorAll('.reveal').forEach((el) => revealObs.observe(el))
+    targets.forEach((el) => observer.observe(el))
 
-    const diffObs = new IntersectionObserver(
-      (entries, obs) => {
-        entries
-          .filter((e) => e.isIntersecting)
-          .forEach((e, i) => {
-            obs.unobserve(e.target)
-            const id = setTimeout(() => {
-              timers.delete(id)
-              e.target.classList.add('visible')
-            }, i * 110)
-            timers.add(id)
-          })
-      },
-      { threshold: 0.08 },
-    )
-    document.querySelectorAll('.diff-item').forEach((el) => diffObs.observe(el))
-
-    return () => {
-      revealObs.disconnect()
-      diffObs.disconnect()
-      timers.forEach(clearTimeout)
-    }
+    return () => observer.disconnect()
   }, [])
 }

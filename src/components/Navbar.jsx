@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { CONTACT_ANCHOR, NAV_LINKS } from '../constants.js'
-
-// Mesmo breakpoint do CSS em que o hamburger aparece.
-const DESKTOP_QUERY = '(min-width: 769px)'
+import { ArrowIcon, MailIcon, WhatsAppIcon } from './Icons.jsx'
+import {
+  CONTACT,
+  CONTACT_ANCHOR,
+  NAV_DESKTOP_QUERY,
+  NAV_LINKS,
+  WHATSAPP_MESSAGES,
+  whatsappLink,
+} from '../constants.js'
 
 const SECTION_IDS = [...NAV_LINKS, CONTACT_ANCHOR].map(({ href }) => href.slice(1))
 
@@ -17,7 +22,7 @@ export default function Navbar() {
   useEffect(() => {
     let last = null
     const onScroll = () => {
-      const next = window.scrollY > 40
+      const next = window.scrollY > 24
       if (next !== last) {
         last = next
         setScrolled(next)
@@ -94,7 +99,7 @@ export default function Navbar() {
       focusables[next].focus()
     }
 
-    const desktopQuery = window.matchMedia?.(DESKTOP_QUERY)
+    const desktopQuery = window.matchMedia?.(NAV_DESKTOP_QUERY)
     const onBreakpoint = (e) => {
       if (e.matches) closeMenu(false)
     }
@@ -110,81 +115,121 @@ export default function Navbar() {
     }
   }, [open, closeMenu])
 
+  const navClass = [scrolled && 'scrolled', open && 'menu-open'].filter(Boolean).join(' ')
+
   return (
-    <header>
-      {/* MENU MOBILE */}
+    <header className="site-header">
+      <nav id="navbar" className={navClass || undefined} aria-label="Navegação principal">
+        <div className="nav-shell">
+          {/* Superfície de vidro: aparece ao rolar ou com o menu aberto */}
+          <span className="nav-surface glass glass--dense" aria-hidden="true">
+            <span className="nav-progress"></span>
+          </span>
+
+          <a href="#hero" className="nav-logo" aria-label="Axon Stack — início">
+            <img
+              src="/img/logo-icone-76.png"
+              srcSet="/img/logo-icone-76.png 76w, /img/logo-icone-112.png 112w"
+              sizes="38px"
+              className="nav-logo-icon"
+              width="38"
+              height="38"
+              alt=""
+            />
+            <span className="nav-logo-text" aria-hidden="true">
+              AXON STACK
+            </span>
+          </a>
+
+          <ul className="nav-links">
+            {NAV_LINKS.map(({ href, label }) => (
+              <li key={href}>
+                <a href={href} className="nav-link" {...linkProps(href)}>
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href={CONTACT_ANCHOR.href}
+            className="btn btn-primary btn-sm nav-cta"
+            {...linkProps(CONTACT_ANCHOR.href)}
+          >
+            {CONTACT_ANCHOR.label}
+            <ArrowIcon />
+          </a>
+
+          <button
+            type="button"
+            className="nav-toggle"
+            ref={toggleRef}
+            onClick={() => setOpen((o) => !o)}
+            aria-label={open ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={open}
+            aria-controls="nav-drawer"
+          >
+            <span className="nav-toggle-bars" aria-hidden="true">
+              <span></span>
+              <span></span>
+            </span>
+          </button>
+        </div>
+      </nav>
+
+      {/* MENU MOBILE — painel flutuante de vidro */}
+      <div className="nav-scrim" hidden={!open} aria-hidden="true" onClick={() => closeMenu()} />
       <nav
-        className={`nav-drawer${open ? ' open' : ''}`}
+        className="nav-menu glass glass--dense"
         id="nav-drawer"
         ref={drawerRef}
         aria-label="Menu principal"
         hidden={!open}
       >
-        {NAV_LINKS.map(({ href, label }) => (
-          <a key={href} href={href} onClick={() => closeMenu(false)} {...linkProps(href)}>
-            {label}
-          </a>
-        ))}
-        <a
-          href={CONTACT_ANCHOR.href}
-          className="btn btn-primary nav-cta-drawer"
-          onClick={() => closeMenu(false)}
-        >
-          {CONTACT_ANCHOR.label}
-        </a>
-      </nav>
-
-      {/* NAVBAR */}
-      <nav
-        id="navbar"
-        className={`${scrolled ? 'scrolled' : ''}${open ? ' menu-open' : ''}`.trim() || undefined}
-        aria-label="Navegação principal"
-      >
-        <a href="#hero" className="nav-logo" aria-label="Axon Stack — início">
-          <img
-            src="/img/logo-icone.png"
-            srcSet="/img/logo-icone-76.png 76w, /img/logo-icone-112.png 112w, /img/logo-icone.png 164w"
-            sizes="(max-width: 768px) 38px, (max-width: 1024px) 56px, 82px"
-            className="nav-logo-icon"
-            width="82"
-            height="82"
-            alt=""
-          />
-          <span className="nav-logo-text" aria-hidden="true">
-            AXON STACK
-          </span>
-        </a>
-        <ul className="nav-links">
-          {NAV_LINKS.map(({ href, label }) => (
+        <ol className="nav-menu-links">
+          {NAV_LINKS.map(({ href, label }, i) => (
             <li key={href}>
-              <a href={href} {...linkProps(href)}>
+              <a
+                href={href}
+                className="nav-menu-link"
+                onClick={() => closeMenu(false)}
+                {...linkProps(href)}
+              >
+                <span className="index" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
                 {label}
+                <ArrowIcon />
               </a>
             </li>
           ))}
-          <li>
+        </ol>
+
+        <div className="nav-menu-footer">
+          <a
+            href={CONTACT_ANCHOR.href}
+            className="btn btn-primary btn-block"
+            onClick={() => closeMenu(false)}
+          >
+            {CONTACT_ANCHOR.label}
+            <ArrowIcon />
+          </a>
+          <div className="nav-menu-contacts">
             <a
-              href={CONTACT_ANCHOR.href}
-              className="btn btn-outline nav-cta"
-              {...linkProps(CONTACT_ANCHOR.href)}
+              href={whatsappLink(WHATSAPP_MESSAGES.project)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-glass btn-sm"
             >
-              {CONTACT_ANCHOR.label}
+              <WhatsAppIcon />
+              WhatsApp<span className="sr-only"> (abre em nova aba)</span>
             </a>
-          </li>
-        </ul>
-        <button
-          type="button"
-          className={`nav-hamburger${open ? ' open' : ''}`}
-          ref={toggleRef}
-          onClick={() => setOpen((o) => !o)}
-          aria-label={open ? 'Fechar menu' : 'Abrir menu'}
-          aria-expanded={open}
-          aria-controls="nav-drawer"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </button>
+            <a href={CONTACT.emailHref} className="btn btn-glass btn-sm">
+              <MailIcon />
+              E-mail<span className="sr-only">: {CONTACT.email}</span>
+            </a>
+          </div>
+        </div>
       </nav>
     </header>
   )

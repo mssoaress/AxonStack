@@ -2,13 +2,14 @@ import NetCanvas from './components/NetCanvas.jsx'
 import CustomCursor from './components/CustomCursor.jsx'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
-import ClientsStrip from './components/ClientsStrip.jsx'
+import Marquee from './components/Marquee.jsx'
 import Services from './components/Services.jsx'
+import Projects from './components/Projects.jsx'
+import About from './components/About.jsx'
 import Process from './components/Process.jsx'
 import Diferenciais from './components/Diferenciais.jsx'
-import Cases from './components/Cases.jsx'
 import Faq from './components/Faq.jsx'
-import CtaFinal from './components/CtaFinal.jsx'
+import Contact from './components/Contact.jsx'
 import Footer from './components/Footer.jsx'
 import { useScrollReveal } from './hooks/useScrollReveal.js'
 
@@ -25,13 +26,14 @@ export default function App() {
       <Navbar />
       <main id="conteudo" tabIndex={-1}>
         <Hero />
-        <ClientsStrip />
+        <Marquee />
         <Services />
+        <Projects />
+        <About />
         <Process />
         <Diferenciais />
-        <Cases />
         <Faq />
-        <CtaFinal />
+        <Contact />
       </main>
       <Footer />
     </>

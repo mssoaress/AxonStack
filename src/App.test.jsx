@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import App from './App.jsx'
+import { SERVICES } from './content/services.js'
 
 describe('App', () => {
   it('tem um único H1 e um H2 por seção principal', () => {
@@ -8,11 +9,12 @@ describe('App', () => {
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
     const h2 = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
     expect(h2).toEqual([
-      'Nossos Serviços',
-      'Nosso Processo',
-      'NossosDiferenciais',
-      'PerguntasFrequentes',
-      'Vamos construir a tecnologia que o seu negócio precisa.',
+      'Tecnologia completa, do servidor ao software.',
+      'Conectamos software, infraestrutura e tecnologia para construir soluções digitais completas.',
+      'Do diagnóstico ao suporte, sem lacunas.',
+      'Um núcleo técnico, seis compromissos.',
+      'Perguntas frequentes',
+      'Seu próximo projeto começa com a arquitetura certa.',
     ])
   })
 
@@ -54,18 +56,31 @@ describe('App', () => {
     }
   })
 
-  it('mantém os contatos corretos no CTA final', () => {
+  it('não há links vazios ou de mentira', () => {
+    const { container } = render(<App />)
+    for (const a of container.querySelectorAll('a')) {
+      const href = a.getAttribute('href')
+      expect(href, a.outerHTML).toBeTruthy()
+      expect(href).not.toBe('#')
+      expect(href).not.toMatch(/^javascript:/i)
+    }
+  })
+
+  it('mantém os contatos corretos na seção de contato', () => {
     render(<App />)
-    const cta = within(document.getElementById('cta-final'))
-    expect(cta.getByRole('link', { name: /whatsapp/i }).getAttribute('href')).toMatch(
+    const contact = within(document.getElementById('contato'))
+    expect(contact.getByRole('link', { name: /whatsapp/i }).getAttribute('href')).toMatch(
       /^https:\/\/wa\.me\/5521994291884\?text=Ol%C3%A1!/,
     )
-    expect(cta.getByRole('link', { name: /ligar/i })).toHaveAttribute('href', 'tel:+5521994291884')
-    expect(cta.getByRole('link', { name: /e-mail/i })).toHaveAttribute(
+    expect(contact.getByRole('link', { name: /ligar/i })).toHaveAttribute(
+      'href',
+      'tel:+5521994291884',
+    )
+    expect(contact.getByRole('link', { name: /e-mail/i })).toHaveAttribute(
       'href',
       'mailto:contato@axonstack.dev',
     )
-    expect(cta.getByRole('link', { name: /instagram/i })).toHaveAttribute(
+    expect(contact.getByRole('link', { name: /instagram/i })).toHaveAttribute(
       'href',
       'https://instagram.com/axonstack.dev',
     )
@@ -73,7 +88,9 @@ describe('App', () => {
 
   it('exibe o ano atual no rodapé', () => {
     render(<App />)
-    expect(screen.getByText(`© ${new Date().getFullYear()} Axon Stack.`)).toBeInTheDocument()
+    expect(
+      screen.getByText(`© ${new Date().getFullYear()} Axon Stack. Todos os direitos reservados.`),
+    ).toBeInTheDocument()
   })
 
   it('não apresenta empresas não confirmadas como clientes', () => {
@@ -81,9 +98,13 @@ describe('App', () => {
     for (const name of ['TechNova', 'Infracore', 'Vortex Digital', 'SkyBridge', 'Nexify']) {
       expect(screen.queryByText(new RegExp(name, 'i'))).toBeNull()
     }
-    const strip = screen.getByRole('region', { name: 'Áreas de atuação' })
-    // A cópia usada no loop visual fica oculta para leitores de tela.
-    expect(within(strip).getAllByRole('listitem')).toHaveLength(8)
+  })
+
+  it('a faixa de especialidades é lida uma única vez por leitores de tela', () => {
+    render(<App />)
+    const list = screen.getByRole('list', { name: 'Especialidades' })
+    expect(within(list).getAllByRole('listitem')).toHaveLength(7)
+    expect(document.querySelector('.marquee-track')).toHaveAttribute('aria-hidden', 'true')
   })
 
   it('imagens têm dimensões explícitas', () => {
@@ -95,16 +116,31 @@ describe('App', () => {
     }
   })
 
-  it('CTA principal do hero leva ao WhatsApp com mensagem pronta', () => {
+  it('CTA principal do hero leva ao WhatsApp com mensagem de orçamento', () => {
     render(<App />)
     const hero = within(document.getElementById('hero'))
     const cta = hero.getByRole('link', { name: /solicitar orçamento/i })
     expect(cta.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/5521994291884\?text=/)
+    expect(decodeURIComponent(cta.getAttribute('href'))).toContain('solicitar um orçamento')
     expect(cta).toHaveClass('btn-primary')
+    expect(hero.getByRole('link', { name: 'Explorar soluções' })).toHaveAttribute(
+      'href',
+      '#servicos',
+    )
   })
 
-  it('não renderiza a seção de projetos sem cases reais', () => {
+  it('cada serviço tem um CTA contextual com o nome do serviço na mensagem', () => {
+    render(<App />)
+    for (const { id, title } of SERVICES) {
+      const card = within(document.getElementById(`servico-${id}`))
+      const link = card.getByRole('link', { name: /conversar sobre este serviço/i })
+      expect(decodeURIComponent(link.getAttribute('href'))).toContain(title)
+    }
+  })
+
+  it('não renderiza a seção nem o link de projetos sem projetos reais', () => {
     render(<App />)
     expect(document.getElementById('projetos')).toBeNull()
+    expect(screen.queryByRole('link', { name: 'Projetos' })).toBeNull()
   })
 })

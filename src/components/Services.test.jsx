@@ -22,6 +22,16 @@ describe('Services', () => {
     expect(screen.getAllByText('Infraestrutura')).toHaveLength(4)
   })
 
+  it('cada card lista benefícios e um CTA contextual', () => {
+    render(<Services />)
+    const lists = screen.getAllByRole('list', { name: /^benefícios/i })
+    expect(lists).toHaveLength(6)
+    lists.forEach((list) => expect(list.querySelectorAll('li').length).toBeGreaterThanOrEqual(3))
+    const ctas = screen.getAllByRole('link', { name: /conversar sobre este serviço/i })
+    expect(ctas).toHaveLength(6)
+    expect(decodeURIComponent(ctas[2].getAttribute('href'))).toContain('Cloud Computing')
+  })
+
   it('o brilho do card acompanha o mouse', () => {
     render(<Services />)
     const card = screen.getByText('Cloud Computing').closest('.service-card')

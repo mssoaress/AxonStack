@@ -1,0 +1,83 @@
+/* ==========================================================================
+   MARQUEE — faixa de especialidades entre o hero e as soluções
+   ========================================================================== */
+.marquee {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+  border-block: 1px solid var(--color-line);
+  background: linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0.015),
+    rgb(255 255 255 / 0.03),
+    rgb(255 255 255 / 0.015)
+  );
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 60s linear infinite;
+}
+@media (hover: hover) and (pointer: fine) {
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+.marquee-group {
+  display: flex;
+  flex: none;
+}
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(1.5rem, 1rem + 2vw, 3rem);
+  padding-right: clamp(1.5rem, 1rem + 2vw, 3rem);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 0.95rem + 1.3vw, 2.25rem);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: rgb(244 242 238 / 0.42);
+}
+/* A cada 3 itens, um em destaque — ritmo visual, sem depender da cor para informar nada */
+.marquee-item:nth-child(3n + 1) {
+  color: var(--color-text);
+}
+/* Losango separador (CSS, sem elementos extras no DOM) */
+.marquee-item::after {
+  content: '';
+  flex: none;
+  width: 0.32em;
+  height: 0.32em;
+  background: var(--color-accent);
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .marquee-group + .marquee-group,
+  .marquee-item:last-child::after {
+    display: none;
+  }
+  .marquee-group {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: var(--space-3);
+    padding-inline: var(--gutter);
+  }
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}

@@ -1,57 +1,51 @@
+import SectionHeader from './SectionHeader.jsx'
+import { PROCESS_STEPS } from '../content/process.js'
+
+const DETAILS = [
+  ['analyzed', 'O que analisamos'],
+  ['delivered', 'O que entregamos'],
+  ['benefit', 'Benefício para você'],
+]
+
 export default function Process() {
   return (
-    <section id="processo" aria-labelledby="processo-title">
-      <div className="container">
-        <div className="section-header">
-          <p className="section-label reveal">Como trabalhamos</p>
-          <h2 className="section-title reveal reveal-delay-1" id="processo-title">
-            Nosso Processo
-          </h2>
-          <p className="section-sub reveal reveal-delay-2">
-            Da ideia ao deploy, cada etapa é executada com rigor técnico e comunicação transparente.
-          </p>
+    <section id="processo" className="section process" aria-labelledby="processo-title">
+      <div className="container process-layout">
+        <div className="process-aside">
+          <SectionHeader
+            index="03"
+            label="Processo"
+            titleId="processo-title"
+            title={
+              <>
+                Do diagnóstico ao suporte, <span className="text-gradient">sem lacunas.</span>
+              </>
+            }
+            lead="Quatro etapas com comunicação transparente. Você sabe o que está sendo feito, por quê e o que vem a seguir."
+          />
         </div>
+
         <ol className="process-steps">
-          <li className="process-step reveal reveal-delay-1">
-            <div className="process-num" aria-hidden="true">
-              01
-            </div>
-            <h3 className="process-step-title">Diagnóstico</h3>
-            <p className="process-step-desc">
-              Mapeamos sua infraestrutura atual, objetivos e gargalos para definir o melhor caminho
-              tecnológico.
-            </p>
-          </li>
-          <li className="process-step reveal reveal-delay-2">
-            <div className="process-num" aria-hidden="true">
-              02
-            </div>
-            <h3 className="process-step-title">Arquitetura</h3>
-            <p className="process-step-desc">
-              Projetamos a solução com foco em performance, escalabilidade e custo-benefício para o
-              seu negócio.
-            </p>
-          </li>
-          <li className="process-step reveal reveal-delay-3">
-            <div className="process-num" aria-hidden="true">
-              03
-            </div>
-            <h3 className="process-step-title">Desenvolvimento</h3>
-            <p className="process-step-desc">
-              Executamos com sprints ágeis, código limpo e deploys contínuos com monitoramento em
-              tempo real.
-            </p>
-          </li>
-          <li className="process-step reveal reveal-delay-4">
-            <div className="process-num" aria-hidden="true">
-              04
-            </div>
-            <h3 className="process-step-title">Suporte</h3>
-            <p className="process-step-desc">
-              Acompanhamento contínuo, atualizações proativas e escalonamento sob demanda, com
-              níveis de atendimento definidos com cada cliente.
-            </p>
-          </li>
+          {PROCESS_STEPS.map((step, i) => (
+            <li key={step.title} className="process-step reveal">
+              <span className="process-marker" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div className="process-body card">
+                <p className="process-kicker">Etapa {String(i + 1).padStart(2, '0')}</p>
+                <h3 className="process-title">{step.title}</h3>
+                <p className="process-summary">{step.summary}</p>
+                <dl className="process-details">
+                  {DETAILS.map(([key, label]) => (
+                    <div key={key} className={`process-detail process-detail--${key}`}>
+                      <dt>{label}</dt>
+                      <dd>{step[key]}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </li>
+          ))}
         </ol>
       </div>
     </section>

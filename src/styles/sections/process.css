@@ -1,0 +1,179 @@
+/* ==========================================================================
+   PROCESSO — timeline vertical. O trilho se preenche conforme a rolagem
+   (CSS scroll-driven, com fallback estático) e cada marcador acende ao entrar.
+   ========================================================================== */
+.process {
+  border-top: 1px solid var(--color-line);
+}
+
+.process-layout {
+  display: grid;
+  gap: var(--space-4);
+}
+@media (min-width: 1024px) {
+  .process-layout {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+  .process-aside {
+    position: sticky;
+    top: calc(4rem + var(--space-9));
+  }
+  .process-aside .section-head {
+    margin-bottom: 0;
+  }
+}
+
+.process-steps {
+  --marker: 2.75rem;
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+  view-timeline-name: --process;
+}
+@media (min-width: 768px) {
+  .process-steps {
+    --marker: 3.25rem;
+  }
+}
+
+/* Trilho base + preenchimento */
+.process-steps::before,
+.process-steps::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--marker) / 2);
+  bottom: calc(var(--marker) / 2);
+  left: calc(var(--marker) / 2);
+  width: 1px;
+}
+.process-steps::before {
+  background: var(--color-line-strong);
+}
+.process-steps::after {
+  width: 2px;
+  margin-left: -0.5px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-accent-hi),
+    var(--color-accent) 80%,
+    transparent
+  );
+  transform: scaleY(0);
+  transform-origin: top;
+}
+@supports (animation-timeline: view()) {
+  .process-steps::after {
+    animation: process-fill linear both;
+    animation-timeline: --process;
+    animation-range: cover 15% cover 60%;
+  }
+}
+@keyframes process-fill {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.process-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--marker) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+@media (min-width: 768px) {
+  .process-step {
+    gap: var(--space-5);
+  }
+}
+
+.process-marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--marker);
+  height: var(--marker);
+  border: 1px solid var(--color-line-strong);
+  border-radius: 50%;
+  background: var(--color-graphite);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-subtle);
+  transition:
+    border-color var(--duration-slow) var(--ease-out) 0.2s,
+    color var(--duration-slow) var(--ease-out) 0.2s,
+    box-shadow var(--duration-slow) var(--ease-out) 0.2s;
+}
+.process-step.visible .process-marker {
+  border-color: var(--color-accent-line);
+  color: var(--color-accent-text);
+  box-shadow:
+    0 0 0 6px rgb(232 80 2 / 0.08),
+    0 0 26px -4px var(--color-accent-glow);
+}
+
+.process-body {
+  padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+}
+.process-kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+.process-title {
+  margin-top: var(--space-2);
+  font-size: var(--text-h3);
+}
+.process-summary {
+  margin-top: var(--space-2);
+  font-size: var(--text-md);
+  color: var(--color-text-muted);
+}
+
+.process-details {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-line);
+}
+@media (min-width: 640px) {
+  .process-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-6);
+  }
+  .process-detail--benefit {
+    grid-column: 1 / -1;
+  }
+}
+.process-detail dt {
+  margin-bottom: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+.process-detail dd {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+.process-detail--benefit {
+  padding: var(--space-3) var(--space-4);
+  border-left: 2px solid var(--color-accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: linear-gradient(90deg, rgb(232 80 2 / 0.08), transparent);
+}
+.process-detail--benefit dt {
+  color: var(--color-accent-text);
+}
+.process-detail--benefit dd {
+  color: var(--color-text);
+}

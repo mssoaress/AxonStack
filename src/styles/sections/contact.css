@@ -1,0 +1,259 @@
+/* ==========================================================================
+   CONTATO — CTA final de impacto + formulário de orçamento (sem backend)
+   ========================================================================== */
+.contact-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  gap: var(--space-7);
+  padding: clamp(1.5rem, 0.8rem + 3.2vw, 4rem);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2xl);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.035), transparent 35%), var(--color-graphite);
+  box-shadow: var(--glass-highlight), var(--shadow-lg);
+}
+@media (min-width: 1024px) {
+  .contact-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-8);
+  }
+}
+
+/* Iluminação do painel: brasa laranja + grade técnica */
+.contact-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 70% at 0% 100%, rgb(232 80 2 / 0.22), transparent 65%),
+    radial-gradient(40% 50% at 100% 0%, rgb(255 255 255 / 0.04), transparent 70%),
+    linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px) 0 0 / 2.5rem 2.5rem,
+    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px) 0 0 / 2.5rem 2.5rem;
+  -webkit-mask-image: linear-gradient(to top, #000, transparent 85%);
+  mask-image: linear-gradient(to top, #000, transparent 85%);
+}
+
+.contact-intro {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-5);
+}
+.contact-title {
+  font-size: clamp(2.125rem, 1.3rem + 2.7vw, 3.625rem);
+  line-height: 1.04;
+  letter-spacing: var(--tracking-tighter);
+  max-width: 17ch;
+}
+.contact-lead {
+  max-width: 34rem;
+  font-size: var(--text-lead);
+  color: var(--color-text-muted);
+}
+.contact-cta {
+  margin-top: var(--space-2);
+}
+@media (max-width: 479px) {
+  .contact-cta {
+    width: 100%;
+    white-space: normal;
+  }
+}
+
+.contact-channels {
+  width: 100%;
+  margin-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+}
+.contact-channel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 4.25rem;
+  padding: var(--space-3) var(--space-1);
+  border-bottom: 1px solid var(--color-line);
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+.contact-channel-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.03);
+  color: var(--color-accent-hi);
+}
+.contact-channel-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.contact-channel-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+.contact-channel-value {
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+.contact-channel .icon-arrow {
+  flex: none;
+  color: var(--color-text-subtle);
+}
+@media (hover: hover) and (pointer: fine) {
+  .contact-channel:hover {
+    background-color: rgb(255 255 255 / 0.025);
+  }
+  .contact-channel:hover .icon-arrow {
+    color: var(--color-accent-hi);
+    transform: translate(2px, -2px);
+  }
+}
+
+/* ── Formulário ── */
+.contact-form {
+  padding: clamp(1.25rem, 0.9rem + 1.6vw, 2.25rem);
+  border-radius: var(--radius-xl);
+}
+
+.quote-form {
+  display: grid;
+  gap: var(--space-5);
+}
+.quote-title {
+  font-size: var(--text-h3);
+}
+.quote-sub {
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.quote-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+@media (min-width: 560px) {
+  .quote-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .field--full {
+    grid-column: 1 / -1;
+  }
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+.field label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+}
+.field label span {
+  color: var(--color-accent-text);
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  background-color: rgb(5 5 6 / 0.55);
+  color: var(--color-text);
+  /* 16px evita o zoom automático do iOS ao focar */
+  font-size: 1rem;
+  line-height: 1.4;
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+.field textarea {
+  min-height: 7.5rem;
+  resize: vertical;
+  line-height: 1.55;
+}
+.field select {
+  appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='m1 1.5 5 5 5-5' stroke='%23f4f2ee' stroke-opacity='.6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  cursor: pointer;
+}
+.field select:invalid {
+  color: var(--color-text-subtle);
+}
+.field option {
+  background: var(--color-charcoal);
+  color: var(--color-text);
+}
+@media (hover: hover) and (pointer: fine) {
+  .field input:hover,
+  .field select:hover,
+  .field textarea:hover {
+    border-color: rgb(255 255 255 / 0.24);
+  }
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--color-accent-hi);
+  background-color: rgb(5 5 6 / 0.75);
+  box-shadow: 0 0 0 3px rgb(255 107 31 / 0.22);
+}
+.field input:user-invalid,
+.field select:user-invalid,
+.field textarea:user-invalid {
+  border-color: var(--color-danger);
+}
+.field-hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.quote-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+@media (max-width: 559px) {
+  .quote-actions .btn {
+    flex: 1 1 100%;
+  }
+}
+
+.quote-privacy {
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--color-text-subtle);
+}
+
+.quote-status p {
+  padding: var(--space-4);
+  border: 1px solid var(--color-accent-line);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+.quote-status a {
+  color: var(--color-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
